@@ -1,5 +1,5 @@
 import VrRequest from '@/service';
-import { IUserMenuInfo } from '@/types/systems/menu';
+import { IUserMenuInfo, IMenuListParams, IMenuList } from '@/types/systems/menu';
 
 /**
  * 获取角色菜单
@@ -7,5 +7,12 @@ import { IUserMenuInfo } from '@/types/systems/menu';
 export const getRoleMenuList = (roleId: number) => {
   return VrRequest.get<IUserMenuInfo>({
     url: `/menus/user-menu/${roleId}`
+  });
+};
+
+export const getMenuList = (data: IMenuListParams) => {
+  return VrRequest.get<IMenuList>({
+    url: '/menus/menu-list',
+    params: data
   });
 };

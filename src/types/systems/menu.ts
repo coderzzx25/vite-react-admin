@@ -30,3 +30,17 @@ export interface IUserMenuInfo {
 
 // menu格式
 export type MenuItem = Required<MenuProps>['items'][number];
+
+// 菜单列表参数
+export interface IMenuListParams {
+  menuName?: string;
+  status?: number;
+  page: number;
+  size: number;
+}
+
+// 菜单列表
+export interface IMenuList {
+  total: number;
+  data: IMenu[];
+}
