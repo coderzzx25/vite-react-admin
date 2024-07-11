@@ -11,7 +11,7 @@ import VrHeader from '@/components/VrHeader/VrHeader';
 import { getParentMenuUrl, mapMenuToMenuItem, mapMenuToUrl, searchRouter } from '@/utils/map-router';
 import { localCache } from '@/utils/cache';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
-import { setIsCollapsedReducer, setIsDarkReducer } from '@/store/modules/main';
+import { setIsCollapsedReducer, setIsDarkReducer, setPrimaryColorReducer } from '@/store/modules/main';
 import { getRoleMenuListAsyncThunk } from '@/store/modules/systems';
 
 interface IProps {
@@ -27,7 +27,7 @@ const Vrlayout: FC<IProps> = () => {
   const dispatch = useAppDispatch();
   const { userInfo } = useAppSelector((state) => state.auths, useAppShallowEqual);
   const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
-  const { isCollapsed, isDark } = useAppSelector((state) => state.main, useAppShallowEqual);
+  const { isCollapsed, isDark, primaryColor } = useAppSelector((state) => state.main, useAppShallowEqual);
   const [loading, setLoading] = useState(true);
   const [tabItems, setTabItems] = useState([
     {
@@ -120,6 +120,13 @@ const Vrlayout: FC<IProps> = () => {
     dispatch(setIsDarkReducer(!isDark));
   }, [dispatch, isDark]);
 
+  const onChangePrimaryColor = useCallback(
+    (color: string) => {
+      dispatch(setPrimaryColorReducer(color));
+    },
+    [dispatch]
+  );
+
   // 退出登录
   const onClickLoginOut = useCallback(() => {
     localCache.deleteCache('userInfo');
@@ -155,6 +162,8 @@ const Vrlayout: FC<IProps> = () => {
             handleDark={onClickDark}
             dropdownMenuItems={dropdownMenuItems}
             userInfo={userInfo}
+            primaryColor={primaryColor}
+            handlePrimaryColor={onChangePrimaryColor}
           />
         </Header>
         <Content className="content">
