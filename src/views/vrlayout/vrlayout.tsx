@@ -79,6 +79,7 @@ const Vrlayout: FC<IProps> = () => {
       navigate(key);
       const tabItemInfo = searchRouter(key, userMenu);
       if (!tabItemInfo) return;
+      if (tabItems.some((item) => item.key === key)) return;
       setTabItems([
         ...tabItems,
         {
@@ -106,9 +107,12 @@ const Vrlayout: FC<IProps> = () => {
   );
 
   // 标签页点击
-  const onClickTabItem = useCallback((key: string) => {
-    navigate(key);
-  }, []);
+  const onClickTabItem = useCallback(
+    (key: string) => {
+      navigate(key);
+    },
+    [navigate]
+  );
 
   // 处理折叠
   const onClickCollapsed = useCallback(() => {
