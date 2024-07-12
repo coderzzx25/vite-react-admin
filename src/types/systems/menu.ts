@@ -34,7 +34,7 @@ export type MenuItem = Required<MenuProps>['items'][number];
 // 菜单列表参数
 export interface IMenuListParams {
   menuName?: string;
-  status?: number;
+  status?: number | '';
   page: number;
   size: number;
 }
@@ -43,4 +43,13 @@ export interface IMenuListParams {
 export interface IMenuList {
   total: number;
   data: IMenu[];
+}
+
+// 菜单添加参数
+export interface IMenuAddParams {
+  menuName: string;
+  menuUrl: string;
+  menuIcon: string;
+  menuPid: number;
+  status: number;
 }
