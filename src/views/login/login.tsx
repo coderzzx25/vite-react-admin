@@ -9,7 +9,7 @@ import LoginWrapper from './style';
 import loginLeft from '@/assets/images/login-left.svg';
 import { localCache } from '@/utils/cache';
 import { IAccountLoginData } from '@/types/auths/auths';
-import { userLoginFetch } from '@/service/modules/auths/auths';
+import { userLoginService } from '@/service/modules/auths/auths';
 import { useAppDispatch } from '@/store';
 import { setLoginInfoReducer } from '@/store/modules/auths';
 
@@ -51,7 +51,7 @@ const login: FC<IProps> = () => {
       localCache.deleteCache('userName');
       localCache.deleteCache('remember');
     }
-    const loginResult = await userLoginFetch({ userName, userPassword });
+    const loginResult = await userLoginService({ userName, userPassword });
     if (!loginResult) return;
     dispatch(setLoginInfoReducer(loginResult));
     navigate('/');

@@ -1,12 +1,12 @@
 import VrRequest from '@/service';
-import { IUserMenuInfo, IMenuListParams, IMenuList, IMenuAddParams } from '@/types/systems/menu';
+import { IUserMenuInfo, IMenuListParams, IMenuList, IMenuAddParams, IMenuEditParams } from '@/types/systems/menu';
 
 /**
  * @description 获取角色菜单列表
  * @param {Number} roleId 角色ID
  * @returns {Promise<IUserMenuInfo>} 角色菜单列表
  */
-export const getRoleMenuList = (roleId: number) => {
+export const getRoleMenuListService = (roleId: number) => {
   return VrRequest.get<IUserMenuInfo>({
     url: `/menus/user-menu/${roleId}`
   });
@@ -17,7 +17,7 @@ export const getRoleMenuList = (roleId: number) => {
  * @param {IMenuListParams} data 查询参数
  * @returns {Promise<IMenuList>} 菜单列表
  */
-export const getMenuList = (data: IMenuListParams) => {
+export const getMenuListService = (data: IMenuListParams) => {
   return VrRequest.get<IMenuList>({
     url: '/menus/menu-list',
     params: data
@@ -29,9 +29,20 @@ export const getMenuList = (data: IMenuListParams) => {
  * @param {IMenuAddParams} data 菜单数据
  * @returns {Promise<void>}
  */
-export const createMenu = (data: IMenuAddParams) => {
+export const createMenuService = (data: IMenuAddParams) => {
   return VrRequest.post({
     url: '/menus/create-menu',
+    data
+  });
+};
+
+/**
+ * @description 编辑菜单
+ *
+ */
+export const editMenuService = (data: IMenuEditParams) => {
+  return VrRequest.post({
+    url: '/menus/update-menu',
     data
   });
 };

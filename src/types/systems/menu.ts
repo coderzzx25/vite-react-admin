@@ -53,3 +53,8 @@ export interface IMenuAddParams {
   menuPid: number;
   status: number;
 }
+
+// 菜单编辑参数
+export interface IMenuEditParams extends IMenuAddParams {
+  id: number;
+}

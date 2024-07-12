@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getRoleMenuList } from '@/service/modules/systems/menu';
+import { getRoleMenuListService } from '@/service/modules/systems/menu';
 import { IMenu, IPermission, IUserMenuInfo } from '@/types/systems/menu';
 
 interface ISystemsState {
@@ -32,7 +32,7 @@ export default systemsSlice.reducer;
 export const getRoleMenuListAsyncThunk = createAsyncThunk(
   'systems/getRoleMenuListAsyncThunk',
   async (roleId: number) => {
-    const result = await getRoleMenuList(roleId);
+    const result = await getRoleMenuListService(roleId);
     return result;
   }
 );

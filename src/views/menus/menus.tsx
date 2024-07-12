@@ -7,7 +7,7 @@ import type { TableColumnsType } from 'antd';
 
 import MenusWrapper from './style';
 import { IMenu, IMenuListParams, IMenuAddParams } from '@/types/systems/menu';
-import { getMenuList } from '@/service/modules/systems/menu';
+import { getMenuListService, createMenuService, editMenuService } from '@/service/modules/systems/menu';
 import { DATA_STATUS } from '@/global/config/type.config';
 import { mapIcon } from '@/utils/map-router';
 import { useAppSelector, useAppShallowEqual } from '@/store';
@@ -67,7 +67,7 @@ const menus: FC<IProps> = () => {
   // 获取菜单列表数据
   useEffect(() => {
     setTableLoading(true);
-    getMenuList(searchInfo).then((res) => {
+    getMenuListService(searchInfo).then((res) => {
       setMenuList(res.data);
       setTotal(res.total);
       setTableLoading(false);
@@ -96,11 +96,20 @@ const menus: FC<IProps> = () => {
   );
 
   // 抽屉表单提交
-  const onClickDrawerFormSubmit = (values: any) => {
+  const onClickDrawerFormSubmit = async (values: any) => {
+    const newMenuPid = values.menuPid[values.menuPid.length - 1];
+    values.menuPid = newMenuPid;
     if (editMenu) {
-      console.log('编辑', values);
+      editMenuService({
+        ...values,
+        id: editMenu.id
+      }).then(() => {
+        onCloseDrawer();
+      });
     } else {
-      console.log('添加', values);
+      createMenuService(values).then(() => {
+        onCloseDrawer();
+      });
     }
   };
 
@@ -290,7 +299,7 @@ const menus: FC<IProps> = () => {
               <Button type="primary" htmlType="submit">
                 提交
               </Button>
-              <Button>取消</Button>
+              <Button onClick={onCloseDrawer}>取消</Button>
             </Space>
           </Form.Item>
         </Form>
