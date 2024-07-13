@@ -1,19 +1,20 @@
 import { memo, useCallback, useState, useEffect } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Form, Input, Select, Button, Space, Tag, Table, Drawer, Cascader } from 'antd';
+import { Form, Input, Select, Button, Space, Drawer, Cascader } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import type { TableColumnsType } from 'antd';
 
 import MenusWrapper from './style';
 import { IMenu, IMenuListParams, IMenuAddParams } from '@/types/systems/menu';
 import { getMenuListService, createMenuService, editMenuService } from '@/service/modules/systems/menu';
 import { DATA_STATUS } from '@/global/config/type.config';
-import { mapIcon } from '@/utils/map-router';
 import { useAppSelector, useAppShallowEqual } from '@/store';
 
 import VrForm from '@/components/VrForm/VrForm';
 import menuFormConfig from './form.config';
+import VrTable from '@/components/VrTable/VrTable';
+import menuTableConfig from './table.config';
+import Column from 'antd/es/table/Column';
 
 interface IProps {
   children?: ReactNode;
@@ -119,66 +120,6 @@ const menus: FC<IProps> = () => {
     setDrawerVisible(false);
   }, [drawerForm]);
 
-  // 表格列配置
-  const tableColumns: TableColumnsType = [
-    {
-      title: 'ID',
-      dataIndex: 'id',
-      key: 'id',
-      align: 'center'
-    },
-    {
-      title: '菜单名',
-      dataIndex: 'menuName',
-      key: 'menuName',
-      align: 'center'
-    },
-    {
-      title: '菜单路径',
-      dataIndex: 'menuUrl',
-      key: 'menuUrl',
-      align: 'center'
-    },
-    {
-      title: '菜单图标',
-      dataIndex: 'menuIcon',
-      key: 'menuIcon',
-      align: 'center',
-      render: (icon: string) => mapIcon(icon)
-    },
-    {
-      title: '菜单状态',
-      dataIndex: 'status',
-      key: 'status',
-      align: 'center',
-      render: (status: boolean) => (status ? <Tag color="success">启用</Tag> : <Tag color="error">禁用</Tag>)
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createTime',
-      key: 'createTime',
-      align: 'center'
-    },
-    {
-      title: '更新时间',
-      dataIndex: 'updateTime',
-      key: 'updateTime',
-      align: 'center'
-    },
-    {
-      title: '操作',
-      key: 'action',
-      align: 'center',
-      render: (_, record: IMenu) => (
-        <Space size="middle">
-          <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditMenu(record)}>
-            编辑
-          </Button>
-        </Space>
-      )
-    }
-  ];
-
   // 抽屉表单校验规则
   const drawerFormRules = {
     menuName: [{ required: true, message: '请输入菜单名' }],
@@ -200,27 +141,34 @@ const menus: FC<IProps> = () => {
           </Button>
         }
       />
-      <Table
-        dataSource={menuList}
-        columns={tableColumns}
+      <VrTable
+        {...menuTableConfig}
+        data={menuList}
+        total={total}
+        current={searchInfo.page}
+        pageSize={searchInfo.size}
         loading={tableLoading}
-        bordered
-        rowKey={'id'}
-        pagination={{
-          showSizeChanger: true,
-          showQuickJumper: true,
-          current: searchInfo.page,
-          pageSize: searchInfo.size,
-          total,
-          onChange: (page: number, pageSize: number) => {
-            setSearchInfo({
-              ...searchInfo,
-              page,
-              size: pageSize
-            });
-          },
-          showTotal: () => `共 ${total} 条`
-        }}
+        handlePageChange={(page, pageSize) =>
+          setSearchInfo({
+            ...searchInfo,
+            page,
+            size: pageSize
+          })
+        }
+        actionColumn={
+          <Column
+            title="操作"
+            key="action"
+            align="center"
+            render={(_: string, record: IMenu) => (
+              <Space size="middle">
+                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditMenu(record)}>
+                  编辑
+                </Button>
+              </Space>
+            )}
+          />
+        }
       />
       <Drawer title={editMenu ? '编辑菜单' : '添加菜单'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <Form
