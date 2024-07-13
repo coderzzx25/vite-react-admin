@@ -1,8 +1,8 @@
 import { memo, useCallback, useState, useEffect } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Form, Row, Col, Input, Select, Button, Space, Tag, Table, Drawer, Cascader } from 'antd';
-import { SearchOutlined, ReloadOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { Form, Input, Select, Button, Space, Tag, Table, Drawer, Cascader } from 'antd';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import type { TableColumnsType } from 'antd';
 
 import MenusWrapper from './style';
@@ -11,6 +11,9 @@ import { getMenuListService, createMenuService, editMenuService } from '@/servic
 import { DATA_STATUS } from '@/global/config/type.config';
 import { mapIcon } from '@/utils/map-router';
 import { useAppSelector, useAppShallowEqual } from '@/store';
+
+import VrForm from '@/components/VrForm/VrForm';
+import menuFormConfig from './form.config';
 
 interface IProps {
   children?: ReactNode;
@@ -23,8 +26,6 @@ const noMenuPid = {
 
 const menus: FC<IProps> = () => {
   const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
-  // 查询表单
-  const [searchForm] = Form.useForm();
   // 抽屉表单
   const [drawerForm] = Form.useForm();
   // 查询条件
@@ -46,23 +47,21 @@ const menus: FC<IProps> = () => {
   const [editMenu, setEditMenu] = useState<IMenu | null>(null);
 
   // 提交查询条件
-  const onSubmitSearchInfo = useCallback((values: IMenuListParams) => {
-    setSearchInfo((prevSearchInfo) => ({
-      ...prevSearchInfo,
+  const onSubmitSearchInfo = (values: Record<string, any>) => {
+    setSearchInfo({
+      ...searchInfo,
       ...values
-    }));
-  }, []);
+    });
+  };
 
   // 重置查询条件
-  const onResetSearchInfo = useCallback(() => {
-    searchForm.resetFields();
+  const onResetSearchInfo = (values: Record<string, any>) => {
     setSearchInfo({
       page: 1,
       size: 10,
-      menuName: '',
-      status: ''
+      ...values
     });
-  }, [searchForm]);
+  };
 
   // 获取菜单列表数据
   useEffect(() => {
@@ -191,47 +190,16 @@ const menus: FC<IProps> = () => {
 
   return (
     <MenusWrapper>
-      <Form
-        form={searchForm}
-        autoComplete="off"
-        onFinish={onSubmitSearchInfo}
-        initialValues={{
-          menuName: undefined,
-          status: undefined
-        }}
-      >
-        <Row gutter={24}>
-          <Col span={6}>
-            <Form.Item name="menuName">
-              <Input placeholder="请输入菜单名" />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item name="status">
-              <Select placeholder="请选择菜单状态" allowClear>
-                {DATA_STATUS.map((item) => (
-                  <Select.Option key={item.value} value={item.value}>
-                    {item.label}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Space>
-              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                查询
-              </Button>
-              <Button onClick={onResetSearchInfo} icon={<ReloadOutlined />}>
-                重置
-              </Button>
-              <Button onClick={onClickCreateMenu} icon={<PlusOutlined />}>
-                添加菜单
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-      </Form>
+      <VrForm
+        {...menuFormConfig}
+        handleSubmit={onSubmitSearchInfo}
+        handleReset={onResetSearchInfo}
+        otherBtns={
+          <Button onClick={onClickCreateMenu} icon={<PlusOutlined />}>
+            添加菜单
+          </Button>
+        }
+      />
       <Table
         dataSource={menuList}
         columns={tableColumns}
