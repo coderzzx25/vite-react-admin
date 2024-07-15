@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState, useCallback } from 'react';
 import type { FC } from 'react';
 
 import { Button, Col, Form, Input, Row, Select, Space } from 'antd';
@@ -34,13 +34,13 @@ const VrForm: FC<IVrFormProps> = ({
     }, {});
     vrForm.setFieldsValue(initialValues);
     setDdefaultValues(initialValues);
-  }, []);
+  }, [formItems, vrForm]);
 
   // 重置表单
-  const onClickReset = () => {
+  const onClickReset = useCallback(() => {
     vrForm.resetFields();
     handleReset && handleReset(defaultValues);
-  };
+  }, [vrForm, handleReset, defaultValues]);
   return (
     <Form form={vrForm} onFinish={handleSubmit} autoComplete="off" initialValues={defaultValues}>
       <Row gutter={gutter}>
