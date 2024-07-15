@@ -16,7 +16,7 @@ export interface IMenu {
   menuUrl: string;
   menuIcon: string;
   menuPid: number;
-  status: boolean;
+  status: number;
   createTime: string;
   updateTime: string;
   children?: IMenu[];

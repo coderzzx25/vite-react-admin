@@ -87,8 +87,7 @@ const menus: FC<IProps> = () => {
       setEditMenu(menu);
       drawerForm.setFieldsValue({
         ...menu,
-        menuPid: [menu.menuPid],
-        status: menu.status ? 1 : 0
+        menuPid: [menu.menuPid]
       });
       setDrawerVisible(true);
     },

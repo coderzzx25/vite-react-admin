@@ -32,6 +32,7 @@ const VrForm: FC<IVrFormProps> = ({
       prev[next.key] = next.defaultValue || undefined;
       return prev;
     }, {});
+    vrForm.setFieldsValue(initialValues);
     setDdefaultValues(initialValues);
   }, []);
 

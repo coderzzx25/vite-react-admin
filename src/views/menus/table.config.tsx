@@ -1,13 +1,6 @@
 import { Tag } from 'antd';
-import type { TableProps } from 'antd';
 import { mapIcon } from '@/utils/map-router';
-import { IMenu } from '@/types/systems/menu';
-
-interface ITableConfig {
-  tableColumns: TableProps<IMenu>['columns'];
-  bordered?: boolean;
-  rowKey?: string;
-}
+import { ITableConfig } from '@/components/VrTable/type';
 
 const menuTableConfig: ITableConfig = {
   bordered: true,
@@ -43,7 +36,7 @@ const menuTableConfig: ITableConfig = {
       dataIndex: 'status',
       key: 'status',
       align: 'center',
-      render: (status: boolean) => (status ? <Tag color="success">启用</Tag> : <Tag color="error">禁用</Tag>)
+      render: (status: number) => (status ? <Tag color="success">启用</Tag> : <Tag color="error">禁用</Tag>)
     },
     {
       title: '创建时间',
