@@ -1,3 +1,4 @@
+import { Rule } from 'antd/es/form';
 import type { ReactNode } from 'react';
 
 export interface IOptions {
@@ -9,9 +10,15 @@ export interface IFormItem {
   key: string;
   label: string;
   defaultValue: string | number;
-  type: 'input' | 'select';
-  placeholder: string;
+  type: 'input' | 'select' | 'cascader';
+  placeholder?: string;
   options?: IOptions[];
+  rules?: Rule[];
+  fieldNamesOptions?: any[];
+  fieldNames?: {
+    label: string;
+    value: string | number;
+  };
 }
 
 interface IFormColObject {

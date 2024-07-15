@@ -1,7 +1,7 @@
 import { memo, useCallback, useState, useEffect } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Form, Input, Select, Button, Space, Drawer, Cascader } from 'antd';
+import { Form, Input, Select, Button, Space, Drawer, Cascader, Table } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import MenusWrapper from './style';
@@ -14,7 +14,6 @@ import VrForm from '@/components/VrForm/VrForm';
 import menuFormConfig from './form.config';
 import VrTable from '@/components/VrTable/VrTable';
 import menuTableConfig from './table.config';
-import Column from 'antd/es/table/Column';
 
 interface IProps {
   children?: ReactNode;
@@ -24,6 +23,8 @@ const noMenuPid = {
   id: 0,
   menuName: '顶级菜单'
 };
+
+const { Column } = Table;
 
 const menus: FC<IProps> = () => {
   const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
