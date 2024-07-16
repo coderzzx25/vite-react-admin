@@ -2,6 +2,10 @@ import { DATA_STATUS } from '@/global/config/type.config';
 import { IVrFormProps } from '@/components/VrForm/type';
 
 const menuFormConfig: IVrFormProps = {
+  initialValues: {
+    menuName: '',
+    status: undefined
+  },
   formItems: [
     {
       key: 'menuName',

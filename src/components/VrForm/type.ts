@@ -38,6 +38,7 @@ export type ICol = IFormColObject | IFormColNumber;
 export interface IVrFormProps {
   children?: ReactNode;
   formItems: IFormItem[];
+  initialValues: any;
   col?: ICol;
   gutter?: number;
   isShowBtns?: boolean;

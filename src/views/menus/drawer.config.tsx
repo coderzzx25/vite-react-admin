@@ -6,6 +6,13 @@ const menuDrawerConfig: IVrFormProps = {
     span: 24
   },
   isShowBtns: false,
+  initialValues: {
+    menuName: '',
+    menuPid: [0],
+    menuUrl: '',
+    menuIcon: '',
+    status: 1
+  },
   formItems: [
     {
       key: 'menuName',
