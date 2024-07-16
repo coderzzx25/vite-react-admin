@@ -6,7 +6,7 @@ import { IAccountLoginData, IAccountLoginInfo } from '@/types/auths/auths';
  * @param {IAccountLoginData} data 登录数据
  * @returns {Promise<IAccountLoginInfo>} 返回登录信息
  */
-export const userLoginFetch = (data: IAccountLoginData) => {
+export const userLoginService = (data: IAccountLoginData) => {
   return VrRequest.post<IAccountLoginInfo>({
     url: '/auths/account-login',
     data

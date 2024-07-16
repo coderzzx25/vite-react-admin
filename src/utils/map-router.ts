@@ -9,7 +9,7 @@ import { createElement } from 'react';
  * return {reactNode} 处理后的icon
  */
 const customIcons: { [key: string]: any } = Icons;
-const mapIcon = (icon: string) => {
+export const mapIcon = (icon: string) => {
   return createElement(customIcons[icon]);
 };
 
