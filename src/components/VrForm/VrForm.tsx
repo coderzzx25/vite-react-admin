@@ -57,7 +57,7 @@ const VrForm = forwardRef<FormInstance, IVrFormProps>(
                   <Cascader
                     options={item.fieldNamesOptions}
                     fieldNames={item.fieldNames}
-                    changeOnSelect
+                    changeOnSelect={item.cascaderChangeOnSelect}
                     placeholder={item.placeholder}
                   />
                 )}

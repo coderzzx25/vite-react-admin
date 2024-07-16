@@ -152,11 +152,11 @@ const menus: FC<IProps> = () => {
         current={searchInfo.page}
         pageSize={searchInfo.size}
         loading={tableLoading}
-        handlePageChange={(page, pageSize) =>
+        handlePageChange={(page, size) =>
           setSearchInfo({
             ...searchInfo,
             page,
-            size: pageSize
+            size
           })
         }
         actionColumn={
