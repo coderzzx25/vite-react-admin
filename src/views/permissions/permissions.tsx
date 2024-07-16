@@ -1,4 +1,4 @@
-import { memo, useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useState, useCallback, useEffect, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
 
 import { Button, Table, Space, Drawer } from 'antd';
@@ -8,7 +8,6 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import VrForm from '@/components/VrForm/VrForm';
 import permissionFormConfig from './form.config';
 import { IPermissionParams, IPermission } from '@/types/systems/permissions';
-import { noMenuPid } from '@/global/data/data.config';
 import { useAppSelector, useAppShallowEqual } from '@/store';
 import VrTable from '@/components/VrTable/VrTable';
 import permissionTableConfig from './table.config';
