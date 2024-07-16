@@ -24,16 +24,16 @@ const VrForm: FC<IVrFormProps> = ({
   // 创建表单实例
   const [vrForm] = Form.useForm();
   // 默认值
-  const [defaultValues, setDdefaultValues] = useState({});
+  const [defaultValues, setDefaultValues] = useState({});
 
-  // 获取表单默认值，数据类型
+  // 获取表单默认值
   useEffect(() => {
     const initialValues = formItems.reduce((prev: Record<string, any>, next) => {
       prev[next.key] = next.defaultValue || undefined;
       return prev;
     }, {});
     vrForm.setFieldsValue(initialValues);
-    setDdefaultValues(initialValues);
+    setDefaultValues(initialValues);
   }, [formItems, vrForm]);
 
   // 重置表单
@@ -41,6 +41,7 @@ const VrForm: FC<IVrFormProps> = ({
     vrForm.resetFields();
     handleReset && handleReset(defaultValues);
   }, [vrForm, handleReset, defaultValues]);
+
   return (
     <Form form={vrForm} onFinish={handleSubmit} autoComplete="off" initialValues={defaultValues}>
       <Row gutter={gutter}>
