@@ -19,6 +19,7 @@ export interface IFormItem {
     label: string;
     value: string | number;
   };
+  cascaderChangeOnSelect?: boolean;
 }
 
 interface IFormColObject {
