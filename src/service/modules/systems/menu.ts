@@ -1,5 +1,5 @@
 import VrRequest from '@/service';
-import { IUserMenuInfo, IMenuListParams, IMenuList, IMenuAddParams, IMenuEditParams } from '@/types/systems/menu';
+import { IMenuListParams, IMenuList, IMenuAddParams, IMenuEditParams, IMenu } from '@/types/systems/menu';
 
 /**
  * @description 获取角色菜单列表
@@ -7,7 +7,7 @@ import { IUserMenuInfo, IMenuListParams, IMenuList, IMenuAddParams, IMenuEditPar
  * @returns {Promise<IUserMenuInfo>} 角色菜单列表
  */
 export const getRoleMenuListService = (roleId: number) => {
-  return VrRequest.get<IUserMenuInfo>({
+  return VrRequest.get<IMenu[]>({
     url: `/menus/user-menu/${roleId}`
   });
 };
@@ -44,5 +44,11 @@ export const editMenuService = (data: IMenuEditParams) => {
   return VrRequest.post({
     url: '/menus/update-menu',
     data
+  });
+};
+
+export const getAllMenuListService = () => {
+  return VrRequest.get<IMenu[]>({
+    url: '/menus/all-menu-list'
   });
 };

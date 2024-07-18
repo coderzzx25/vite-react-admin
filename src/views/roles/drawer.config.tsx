@@ -8,8 +8,7 @@ const roleDrawerConfig: IVrFormProps = {
   isShowBtns: false,
   initialValues: {
     roleName: '',
-    roleMenus: '',
-    rolePermissions: '',
+    roleMenus: [1],
     status: 1
   },
   formItems: [
@@ -30,8 +29,14 @@ const roleDrawerConfig: IVrFormProps = {
       key: 'roleMenus',
       label: '菜单权限',
       defaultValue: '',
-      type: 'input', // tree
+      type: 'tree',
       placeholder: '请选择菜单权限',
+      treeData: [],
+      treeFieldNames: {
+        title: 'menuName',
+        key: 'id',
+        children: 'children'
+      },
       rules: [
         {
           required: true,

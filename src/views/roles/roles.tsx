@@ -12,6 +12,8 @@ import { getRoleListService } from '@/service/modules/systems/role';
 import VrTable from '@/components/VrTable/VrTable';
 import roleTableConfig from './table.config';
 import roleDrawerConfig from './drawer.config';
+import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
+import { getAllMenuListAsyncThunk } from '@/store/modules/systems';
 
 interface IProps {
   children?: ReactNode;
@@ -20,6 +22,9 @@ interface IProps {
 const { Column } = Table;
 
 const roles: FC<IProps> = () => {
+  const dispatch = useAppDispatch();
+  const { allMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
+
   // 查询条件
   const [searchInfo, setSearchInfo] = useState<IRoleListParams>({
     page: 1,
@@ -37,6 +42,8 @@ const roles: FC<IProps> = () => {
   const [editRole, setEditRole] = useState<IRoleInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
+  // 抽屉配置
+  const [drawerConfig, setDrawerConfig] = useState(roleDrawerConfig);
 
   // 提交查询条件
   const onSubmitSearchInfo = useCallback((values: Record<string, any>) => {
@@ -69,6 +76,28 @@ const roles: FC<IProps> = () => {
   useEffect(() => {
     fetchRoleList();
   }, [fetchRoleList]);
+
+  useEffect(() => {
+    dispatch(getAllMenuListAsyncThunk());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setDrawerConfig((prevConfig) => {
+      const newFormItems = prevConfig.formItems.map((item) => {
+        if (item.key === 'roleMenus') {
+          return {
+            ...item,
+            treeData: allMenu
+          };
+        }
+        return item;
+      });
+      return {
+        ...prevConfig,
+        formItems: newFormItems
+      };
+    });
+  }, [allMenu]);
 
   // 点击添加角色
   const onClickCreateRole = useCallback(() => {
@@ -109,7 +138,7 @@ const roles: FC<IProps> = () => {
       onCloseDrawer();
       fetchRoleList();
     },
-    [editRole]
+    [editRole, fetchRoleList, onCloseDrawer]
   );
 
   return (
@@ -156,7 +185,7 @@ const roles: FC<IProps> = () => {
       <Drawer title={editRole ? '编辑角色' : '添加角色'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <VrForm
           ref={drawerFormRef}
-          {...roleDrawerConfig}
+          {...drawerConfig}
           handleSubmit={onClickDrawerFormSubmit}
           otherBtns={
             <Space>

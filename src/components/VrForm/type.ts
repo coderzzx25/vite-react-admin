@@ -10,7 +10,7 @@ export interface IFormItem {
   key: string;
   label: string;
   defaultValue: string | number;
-  type: 'input' | 'select' | 'cascader';
+  type: 'input' | 'select' | 'cascader' | 'tree';
   placeholder?: string;
   options?: IOptions[];
   rules?: Rule[];
@@ -20,6 +20,8 @@ export interface IFormItem {
     value: string | number;
   };
   cascaderChangeOnSelect?: boolean;
+  treeData?: any[];
+  treeFieldNames?: any;
 }
 
 interface IFormColObject {
