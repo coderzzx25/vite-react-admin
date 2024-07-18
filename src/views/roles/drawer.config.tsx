@@ -40,19 +40,6 @@ const roleDrawerConfig: IVrFormProps = {
       ]
     },
     {
-      key: 'rolePermissions',
-      label: '操作权限',
-      defaultValue: '',
-      type: 'input', // tree
-      placeholder: '请选择操作权限',
-      rules: [
-        {
-          required: true,
-          message: '请选择操作权限'
-        }
-      ]
-    },
-    {
       key: 'status',
       label: '角色状态',
       defaultValue: '',

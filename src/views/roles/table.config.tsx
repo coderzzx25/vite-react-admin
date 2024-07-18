@@ -24,12 +24,6 @@ const roleTableConfig: ITableConfig = {
       align: 'center'
     },
     {
-      title: '角色权限',
-      dataIndex: 'rolePermissions',
-      key: 'rolePermissions',
-      align: 'center'
-    },
-    {
       title: '角色状态',
       dataIndex: 'status',
       key: 'status',
