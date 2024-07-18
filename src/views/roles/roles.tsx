@@ -8,7 +8,7 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import roleFormConfig from './form.config';
 import VrForm from '@/components/VrForm/VrForm';
 import type { IRoleListParams, IRoleInfo } from '@/types/systems/role';
-import { getRoleListService } from '@/service/modules/systems/role';
+import { getRoleListService, createRoleService, updateRoleService } from '@/service/modules/systems/role';
 import VrTable from '@/components/VrTable/VrTable';
 import roleTableConfig from './table.config';
 import roleDrawerConfig from './drawer.config';
@@ -129,11 +129,9 @@ const roles: FC<IProps> = () => {
   const onClickDrawerFormSubmit = useCallback(
     async (values: any) => {
       if (editRole) {
-        console.log(values);
-        // await editMenuService({ ...values, id: editMenu.id });
+        await updateRoleService({ ...values, id: editRole.id });
       } else {
-        console.log(values);
-        // await createMenuService(values);
+        await createRoleService(values);
       }
       onCloseDrawer();
       fetchRoleList();

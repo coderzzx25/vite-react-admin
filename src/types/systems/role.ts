@@ -19,3 +19,13 @@ export interface IRoleList {
   data: IRoleInfo[];
   total: number;
 }
+
+export interface ICreateRoleParams {
+  roleName: string;
+  roleMenus: number[];
+  status: number;
+}
+
+export interface IUpdateRoleParams extends ICreateRoleParams {
+  id: number;
+}
