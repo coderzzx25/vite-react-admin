@@ -23,7 +23,7 @@ export interface IRoleInfo {
 /**
  * 角色列表响应信息
  */
-export interface IRoleList {
+export interface IRoleListResponseInfo {
   data: IRoleInfo[];
   total: number;
 }

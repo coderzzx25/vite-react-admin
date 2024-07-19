@@ -1,5 +1,11 @@
 import VrRequest from '@/service';
-import { IRoleListParams, IRoleList, ICreateRoleBody, IUpdateRoleBody, IRoleInfo } from '@/types/systems/role';
+import {
+  IRoleListParams,
+  IRoleListResponseInfo,
+  ICreateRoleBody,
+  IUpdateRoleBody,
+  IRoleInfo
+} from '@/types/systems/role';
 
 /**
  * 获取角色列表
@@ -7,7 +13,7 @@ import { IRoleListParams, IRoleList, ICreateRoleBody, IUpdateRoleBody, IRoleInfo
  * @returns
  */
 export const getRoleListService = (data: IRoleListParams) => {
-  return VrRequest.get<IRoleList>({
+  return VrRequest.get<IRoleListResponseInfo>({
     url: '/roles/role-list',
     params: data
   });
