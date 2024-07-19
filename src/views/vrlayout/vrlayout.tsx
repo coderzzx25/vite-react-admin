@@ -25,7 +25,7 @@ const Vrlayout: FC<IProps> = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const dispatch = useAppDispatch();
-  const { userInfo } = useAppSelector((state) => state.auths, useAppShallowEqual);
+  const { userInfo, accessToken } = useAppSelector((state) => state.auths, useAppShallowEqual);
   const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
   const { isCollapsed, isDark, primaryColor } = useAppSelector((state) => state.main, useAppShallowEqual);
   const [loading, setLoading] = useState(true);
@@ -39,7 +39,7 @@ const Vrlayout: FC<IProps> = () => {
 
   // 判断是否登录
   useEffect(() => {
-    if (!userInfo && pathname !== '/login') {
+    if (!userInfo && accessToken && pathname !== '/login') {
       navigate('/login');
     }
   }, [userInfo, pathname, navigate]);
