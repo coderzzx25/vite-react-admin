@@ -1,13 +1,13 @@
 import VrRequest from '@/service';
-import { IAccountLoginData, IAccountLoginInfo } from '@/types/auths/auths';
+import { IAccountLoginBody, IAccountLoginResponseInfo } from '@/types/auths/auths';
 
 /**
  * 用户登录
- * @param {IAccountLoginData} data 登录数据
- * @returns {Promise<IAccountLoginInfo>} 返回登录信息
+ * @param {IAccountLoginBody} data 登录数据
+ * @returns {Promise<IAccountLoginResponseInfo>} 返回登录信息
  */
-export const userLoginService = (data: IAccountLoginData) => {
-  return VrRequest.post<IAccountLoginInfo>({
+export const userLoginService = (data: IAccountLoginBody) => {
+  return VrRequest.post<IAccountLoginResponseInfo>({
     url: '/auths/account-login',
     data
   });

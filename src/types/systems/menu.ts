@@ -1,6 +1,17 @@
-import { type MenuProps } from 'antd';
+/**
+ * 菜单列表请求参数
+ */
+export interface IMenuListParams {
+  page: number;
+  size: number;
+  menuName?: string;
+  status?: number;
+}
 
-export interface IMenu {
+/**
+ * 菜单信息
+ */
+export interface IMenuInfo {
   id: number;
   menuName: string;
   menuUrl: string;
@@ -9,28 +20,21 @@ export interface IMenu {
   status: number;
   createTime: string;
   updateTime: string;
-  children?: IMenu[];
+  children?: IMenuInfo[];
 }
 
-// menu格式
-export type MenuItem = Required<MenuProps>['items'][number];
-
-// 菜单列表参数
-export interface IMenuListParams {
-  menuName?: string;
-  status?: number | '';
-  page: number;
-  size: number;
-}
-
-// 菜单列表
-export interface IMenuList {
+/**
+ * 菜单列表响应信息
+ */
+export interface IMenuListResponseInfo {
   total: number;
-  data: IMenu[];
+  data: IMenuInfo[];
 }
 
-// 菜单添加参数
-export interface IMenuAddParams {
+/**
+ * 添加菜单参数
+ */
+export interface ICreateMenuBody {
   menuName: string;
   menuUrl: string;
   menuIcon: string;
@@ -38,7 +42,9 @@ export interface IMenuAddParams {
   status: number;
 }
 
-// 菜单编辑参数
-export interface IMenuEditParams extends IMenuAddParams {
+/**
+ * 编辑菜单参数
+ */
+export interface IUpdateMenuBody extends ICreateMenuBody {
   id: number;
 }

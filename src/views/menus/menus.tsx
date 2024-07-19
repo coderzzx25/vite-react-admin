@@ -7,7 +7,7 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import MenusWrapper from './style';
 
-import { getMenuListService, createMenuService, editMenuService } from '@/service/modules/systems/menu';
+import { getMenuListService, createMenuService, updateMenuService } from '@/service/modules/systems/menu';
 import { useAppSelector, useAppShallowEqual } from '@/store';
 
 import VrForm from '@/components/VrForm/VrForm';
@@ -16,7 +16,7 @@ import menuTableConfig from './table.config';
 import menuDrawerConfig from './drawer.config';
 import menuFormConfig from './form.config';
 
-import { IMenu, IMenuListParams } from '@/types/systems/menu';
+import { IMenuInfo, IMenuListParams } from '@/types/systems/menu';
 import { noMenuPid } from '@/global/data/data.config';
 
 interface IProps {
@@ -35,13 +35,13 @@ const menus: FC<IProps> = () => {
   // 表格loading
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   // 菜单列表数据
-  const [menuList, setMenuList] = useState<IMenu[]>([]);
+  const [menuList, setMenuList] = useState<IMenuInfo[]>([]);
   // 菜单列表总数
   const [total, setTotal] = useState<number>(0);
   // 抽屉显示隐藏
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   // 编辑的菜单数据
-  const [editMenu, setEditMenu] = useState<IMenu | null>(null);
+  const [editMenu, setEditMenu] = useState<IMenuInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
 
@@ -82,7 +82,7 @@ const menus: FC<IProps> = () => {
   }, []);
 
   // 点击编辑菜单
-  const onClickEditMenu = useCallback((menu: IMenu) => {
+  const onClickEditMenu = useCallback((menu: IMenuInfo) => {
     setEditMenu(menu);
     setDrawerVisible(true);
   }, []);
@@ -103,7 +103,7 @@ const menus: FC<IProps> = () => {
       const newMenuPid = values.menuPid[values.menuPid.length - 1];
       values.menuPid = newMenuPid;
       if (editMenu) {
-        await editMenuService({ ...values, id: editMenu.id });
+        await updateMenuService({ ...values, id: editMenu.id });
       } else {
         await createMenuService(values);
       }
@@ -164,7 +164,7 @@ const menus: FC<IProps> = () => {
             title="操作"
             key="action"
             align="center"
-            render={(_: string, record: IMenu) => (
+            render={(_: string, record: IMenuInfo) => (
               <Space size="middle">
                 <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditMenu(record)}>
                   编辑
