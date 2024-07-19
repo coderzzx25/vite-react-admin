@@ -1,35 +1,30 @@
 import VrRequest from '@/service';
-import { IMenuListParams, IMenuList, IMenuAddParams, IMenuEditParams, IMenu } from '@/types/systems/menu';
+import {
+  IMenuListParams,
+  IMenuListResponseInfo,
+  ICreateMenuBody,
+  IUpdateMenuBody,
+  IMenuInfo
+} from '@/types/systems/menu';
 
 /**
- * @description 获取角色菜单列表
- * @param {Number} roleId 角色ID
- * @returns {Promise<IUserMenuInfo>} 角色菜单列表
- */
-export const getRoleMenuListService = (roleId: number) => {
-  return VrRequest.get<IMenu[]>({
-    url: `/menus/user-menu/${roleId}`
-  });
-};
-
-/**
- * @description 获取菜单列表
+ * 获取菜单列表
  * @param {IMenuListParams} data 查询参数
- * @returns {Promise<IMenuList>} 菜单列表
+ * @returns {Promise<IMenuListResponseInfo>} 菜单列表
  */
 export const getMenuListService = (data: IMenuListParams) => {
-  return VrRequest.get<IMenuList>({
+  return VrRequest.get<IMenuListResponseInfo>({
     url: '/menus/menu-list',
     params: data
   });
 };
 
 /**
- * @description 添加菜单
- * @param {IMenuAddParams} data 菜单数据
+ * 添加菜单
+ * @param {ICreateMenuBody} data 添加菜单参数
  * @returns {Promise<void>}
  */
-export const createMenuService = (data: IMenuAddParams) => {
+export const createMenuService = (data: ICreateMenuBody) => {
   return VrRequest.post({
     url: '/menus/create-menu',
     data
@@ -37,18 +32,34 @@ export const createMenuService = (data: IMenuAddParams) => {
 };
 
 /**
- * @description 编辑菜单
- *
+ * 编辑菜单
+ * @param {IUpdateMenuBody} data 编辑菜单参数
+ * @returns {Promise<void>}
  */
-export const editMenuService = (data: IMenuEditParams) => {
+export const updateMenuService = (data: IUpdateMenuBody) => {
   return VrRequest.post({
     url: '/menus/update-menu',
     data
   });
 };
 
+/**
+ * 获取所有菜单列表
+ * @returns {Promise<IMenuInfo[]>} 菜单列表
+ */
 export const getAllMenuListService = () => {
-  return VrRequest.get<IMenu[]>({
+  return VrRequest.get<IMenuInfo[]>({
     url: '/menus/all-menu-list'
+  });
+};
+
+/**
+ * @description 获取角色菜单列表
+ * @param {Number} roleId 角色ID
+ * @returns {Promise<IUserMenuInfo>} 角色菜单列表
+ */
+export const getRoleMenuListService = (roleId: number) => {
+  return VrRequest.get<IMenuInfo[]>({
+    url: `/menus/user-menu/${roleId}`
   });
 };

@@ -1,5 +1,8 @@
 import { IRoleInfo } from './role';
 
+/**
+ * 用户列表请求参数
+ */
 export interface IUserListParams {
   page: number;
   size: number;
@@ -9,6 +12,9 @@ export interface IUserListParams {
   status?: number;
 }
 
+/**
+ * 用户信息
+ */
 export interface IUserInfo {
   id: number;
   userName: string;
@@ -20,12 +26,18 @@ export interface IUserInfo {
   updateTime: string;
 }
 
-export interface IUserList {
+/**
+ * 用户列表响应信息
+ */
+export interface IUserListResponseInfo {
   total: number;
   data: IUserInfo[];
 }
 
-export interface IUserAddParams {
+/**
+ * 添加用户参数
+ */
+export interface ICreateUserBody {
   userName: string;
   userNick: string;
   userHead: string;
@@ -33,6 +45,9 @@ export interface IUserAddParams {
   status: number;
 }
 
-export interface IUserUpdateParams extends IUserAddParams {
+/**
+ * 编辑用户参数
+ */
+export interface IUpdateUserBody extends ICreateUserBody {
   id: number;
 }

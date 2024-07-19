@@ -12,21 +12,18 @@ const userFormConfig: IVrFormProps = {
     {
       key: 'userName',
       label: '用户名',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入用户名'
     },
     {
       key: 'userNick',
       label: '昵称',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入昵称'
     },
     {
       key: 'userRole',
       label: '角色',
-      defaultValue: '',
       type: 'select',
       options: [],
       placeholder: '请选择角色'
@@ -34,7 +31,6 @@ const userFormConfig: IVrFormProps = {
     {
       key: 'status',
       label: '状态',
-      defaultValue: '',
       type: 'select',
       options: DATA_STATUS,
       placeholder: '请选择状态'

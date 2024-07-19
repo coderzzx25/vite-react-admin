@@ -17,7 +17,6 @@ const menuDrawerConfig: IVrFormProps = {
     {
       key: 'menuName',
       label: '菜单名',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入菜单名',
       rules: [{ required: true, message: '请输入菜单名' }]
@@ -25,7 +24,6 @@ const menuDrawerConfig: IVrFormProps = {
     {
       key: 'menuPid',
       label: '父菜单',
-      defaultValue: '',
       type: 'cascader',
       placeholder: '请选择父菜单',
       cascaderChangeOnSelect: true,
@@ -39,7 +37,6 @@ const menuDrawerConfig: IVrFormProps = {
     {
       key: 'menuUrl',
       label: '菜单路径',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入菜单路径',
       rules: [{ required: true, message: '请输入菜单图标' }]
@@ -47,7 +44,6 @@ const menuDrawerConfig: IVrFormProps = {
     {
       key: 'menuIcon',
       label: '菜单图标',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入菜单图标',
       rules: [{ required: true, message: '请输入菜单路径' }]
@@ -55,7 +51,6 @@ const menuDrawerConfig: IVrFormProps = {
     {
       key: 'status',
       label: '菜单状态',
-      defaultValue: '',
       type: 'select',
       placeholder: '请选择菜单状态',
       options: DATA_STATUS,

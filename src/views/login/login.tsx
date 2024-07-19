@@ -8,7 +8,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import LoginWrapper from './style';
 import loginLeft from '@/assets/images/login-left.svg';
 import { localCache } from '@/utils/cache';
-import { IAccountLoginData } from '@/types/auths/auths';
+import { IAccountLoginBody } from '@/types/auths/auths';
 import { userLoginService } from '@/service/modules/auths/auths';
 import { useAppDispatch } from '@/store';
 import { setLoginInfoReducer } from '@/store/modules/auths';
@@ -20,7 +20,7 @@ interface IProps {
   children?: ReactNode;
 }
 
-interface IFormValues extends IAccountLoginData {
+interface IFormValues extends IAccountLoginBody {
   remember: boolean;
 }
 

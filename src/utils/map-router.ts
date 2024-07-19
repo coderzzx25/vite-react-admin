@@ -1,6 +1,6 @@
-import { MenuItem } from '@/types/systems/menu';
-import { IMenu } from '@/types/systems/menu';
+import { IMenuInfo } from '@/types/systems/menu';
 import * as Icons from '@ant-design/icons';
+import { MenuProps } from 'antd';
 import { createElement } from 'react';
 
 /**
@@ -15,10 +15,10 @@ export const mapIcon = (icon: string) => {
 
 /**
  * @description 处理菜单数据
- * @param {IMenu[]} menus 菜单数据
+ * @param {IMenuInfo[]} menus 菜单数据
  * return {MenuItem[]} 处理后的菜单数据
  */
-export const mapMenuToMenuItem = (menus: IMenu[]): MenuItem[] => {
+export const mapMenuToMenuItem = (menus: IMenuInfo[]): Required<MenuProps>['items'][number][] => {
   return menus.map((item) => {
     if (item.children) {
       return {
@@ -39,12 +39,12 @@ export const mapMenuToMenuItem = (menus: IMenu[]): MenuItem[] => {
 
 /**
  * @description 处理菜单一维数组
- * @param {IMenu[]} menus 菜单数据
+ * @param {IMenuInfo[]} menus 菜单数据
  * return {string[]} 处理后的菜单一维数组
  */
-export const mapMenuToUrl = (menus: IMenu[]): string[] => {
+export const mapMenuToUrl = (menus: IMenuInfo[]): string[] => {
   if (!Array.isArray(menus)) return [];
-  return menus.reduce((prev: string[], current: IMenu) => {
+  return menus.reduce((prev: string[], current: IMenuInfo) => {
     if (current.children) {
       return prev.concat(...mapMenuToUrl(current.children));
     }
@@ -58,7 +58,7 @@ export const mapMenuToUrl = (menus: IMenu[]): string[] => {
  * @param {string} url 子菜单的url
  * return {string} 父菜单的url
  */
-export const getParentMenuUrl = (menus: IMenu[], url: string): string => {
+export const getParentMenuUrl = (menus: IMenuInfo[], url: string): string => {
   let parentUrl = '';
   menus.forEach((item) => {
     if (item.children) {
@@ -75,7 +75,7 @@ export const getParentMenuUrl = (menus: IMenu[], url: string): string => {
   return parentUrl;
 };
 
-export const searchRouter = (url: string, menus: IMenu[]): IMenu | null => {
+export const searchRouter = (url: string, menus: IMenuInfo[]): IMenuInfo | null => {
   if (!Array.isArray(menus)) return null;
   for (const item of menus) {
     if (item.menuUrl === url) return item;

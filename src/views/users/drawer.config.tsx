@@ -17,7 +17,6 @@ const userDrawerConfig: IVrFormProps = {
     {
       key: 'userName',
       label: '用户名',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入用户名',
       rules: [
@@ -30,7 +29,6 @@ const userDrawerConfig: IVrFormProps = {
     {
       key: 'userNick',
       label: '昵称',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入昵称',
       rules: [
@@ -43,7 +41,6 @@ const userDrawerConfig: IVrFormProps = {
     {
       key: 'userHead',
       label: '头像',
-      defaultValue: '',
       type: 'input',
       placeholder: '请上传头像',
       rules: [
@@ -56,7 +53,6 @@ const userDrawerConfig: IVrFormProps = {
     {
       key: 'userRole',
       label: '角色',
-      defaultValue: '',
       type: 'select',
       placeholder: '请选择角色',
       options: [],
@@ -70,7 +66,6 @@ const userDrawerConfig: IVrFormProps = {
     {
       key: 'status',
       label: '用户状态',
-      defaultValue: '',
       type: 'select',
       placeholder: '请选择用户状态',
       options: DATA_STATUS,

@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { getAllMenuListService, getRoleMenuListService } from '@/service/modules/systems/menu';
 import { getAllRoleListService } from '@/service/modules/systems/role';
-import { IMenu } from '@/types/systems/menu';
+import { IMenuInfo } from '@/types/systems/menu';
 import { IRoleInfo } from '@/types/systems/role';
 
 interface ISystemsState {
-  userMenu: IMenu[];
-  allMenu: IMenu[];
+  userMenu: IMenuInfo[];
+  allMenu: IMenuInfo[];
   allRole: IRoleInfo[];
 }
 
@@ -19,10 +19,10 @@ const systemsSlice = createSlice({
   } as ISystemsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getRoleMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenu[]>) => {
+    builder.addCase(getRoleMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenuInfo[]>) => {
       state.userMenu = payload;
     });
-    builder.addCase(getAllMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenu[]>) => {
+    builder.addCase(getAllMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenuInfo[]>) => {
       state.allMenu = payload;
     });
     builder.addCase(getAllRoleListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IRoleInfo[]>) => {
@@ -48,7 +48,7 @@ export const getRoleMenuListAsyncThunk = createAsyncThunk(
 
 /**
  * 获取所有菜单
- * @returns {Promise<IMenu[]>}
+ * @returns {Promise<IMenuInfo[]>}
  */
 export const getAllMenuListAsyncThunk = createAsyncThunk('systems/getAllMenuListAsyncThunk', async () => {
   const result = await getAllMenuListService();

@@ -4,11 +4,10 @@ import type { MenuProps } from 'antd';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 
 import VrMenuWrapper from './style';
-import { MenuItem } from '@/types/systems/menu';
 
 interface IProps {
   children?: ReactNode;
-  menuItems: MenuItem[];
+  menuItems: Required<MenuProps>['items'][number][];
   handleMenuClick?: (key: string) => void;
   selectedKeys?: string;
   openKey?: string;

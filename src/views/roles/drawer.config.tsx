@@ -15,7 +15,6 @@ const roleDrawerConfig: IVrFormProps = {
     {
       key: 'roleName',
       label: '角色名',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入角色名',
       rules: [
@@ -28,7 +27,6 @@ const roleDrawerConfig: IVrFormProps = {
     {
       key: 'roleMenus',
       label: '菜单权限',
-      defaultValue: '',
       type: 'tree',
       placeholder: '请选择菜单权限',
       treeData: [],
@@ -47,7 +45,6 @@ const roleDrawerConfig: IVrFormProps = {
     {
       key: 'status',
       label: '角色状态',
-      defaultValue: '',
       type: 'select',
       placeholder: '请选择角色状态',
       options: DATA_STATUS,

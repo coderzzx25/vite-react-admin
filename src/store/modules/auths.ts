@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IAccountLoginInfo, IUserInfo } from '@/types/auths/auths';
+import { IAccountLoginResponseInfo, IUserInfo } from '@/types/auths/auths';
 import { localCache } from '@/utils/cache';
 
 interface IAuthsState {
@@ -17,7 +17,7 @@ const authsSlice = createSlice({
     refreshToken: localCache.getCache('refreshToken') || ''
   } as IAuthsState,
   reducers: {
-    setLoginInfoReducer(state, { payload }: PayloadAction<IAccountLoginInfo>) {
+    setLoginInfoReducer(state, { payload }: PayloadAction<IAccountLoginResponseInfo>) {
       state.userInfo = payload.userInfo;
       state.accessToken = payload.accessToken;
       state.refreshToken = payload.refreshToken;

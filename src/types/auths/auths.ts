@@ -1,10 +1,14 @@
-// 账户登录提交数据
-export interface IAccountLoginData {
+/**
+ * 账户登录请求参数
+ */
+export interface IAccountLoginBody {
   userName: string;
   userPassword: string;
 }
 
-// 登录返回用户信息
+/**
+ * 用户信息
+ */
 export interface IUserInfo {
   userName: string;
   userNickName: string;
@@ -12,8 +16,10 @@ export interface IUserInfo {
   roleId: number;
 }
 
-// 登录返回数据
-export interface IAccountLoginInfo {
+/**
+ * 账户登录响应信息
+ */
+export interface IAccountLoginResponseInfo {
   userInfo: IUserInfo;
   accessToken: string;
   refreshToken: string;
