@@ -10,14 +10,12 @@ const roleFormConfig: IVrFormProps = {
     {
       key: 'roleName',
       label: '角色名称',
-      defaultValue: '',
       type: 'input',
       placeholder: '请输入角色名称'
     },
     {
       key: 'status',
       label: '状态',
-      defaultValue: '',
       type: 'select',
       options: DATA_STATUS,
       placeholder: '请选择状态'

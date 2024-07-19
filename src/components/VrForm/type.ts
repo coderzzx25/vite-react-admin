@@ -9,7 +9,6 @@ export interface IOptions {
 export interface IFormItem {
   key: string;
   label: string;
-  defaultValue: string | number;
   type: 'input' | 'select' | 'cascader' | 'tree';
   placeholder?: string;
   options?: IOptions[];

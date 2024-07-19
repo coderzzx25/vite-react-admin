@@ -5,15 +5,15 @@ import { Table, Space, Button, Drawer } from 'antd';
 import { FormInstance } from 'antd/lib';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
-import roleFormConfig from './form.config';
-import VrForm from '@/components/VrForm/VrForm';
-import type { IRoleListParams, IRoleInfo } from '@/types/systems/role';
 import { getRoleListService, createRoleService, updateRoleService } from '@/service/modules/systems/role';
-import VrTable from '@/components/VrTable/VrTable';
-import roleTableConfig from './table.config';
-import roleDrawerConfig from './drawer.config';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllMenuListAsyncThunk } from '@/store/modules/systems';
+import type { IRoleListParams, IRoleInfo } from '@/types/systems/role';
+import VrTable from '@/components/VrTable/VrTable';
+import VrForm from '@/components/VrForm/VrForm';
+import roleFormConfig from './form.config';
+import roleTableConfig from './table.config';
+import roleDrawerConfig from './drawer.config';
 
 interface IProps {
   children?: ReactNode;
@@ -32,14 +32,14 @@ const roles: FC<IProps> = () => {
   });
   // 表格loading
   const [tableLoading, setTableLoading] = useState<boolean>(false);
-  // 角色列表数据
-  const [roleList, setRoleList] = useState<IRoleInfo[]>([]);
-  // 角色列表总数
+  // 表格数据
+  const [tableList, setTableList] = useState<IRoleInfo[]>([]);
+  // 表格总数
   const [total, setTotal] = useState<number>(0);
   // 抽屉显示隐藏
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  // 编辑的角色数据
-  const [editRole, setEditRole] = useState<IRoleInfo | null>(null);
+  // 编辑的数据
+  const [updateInfo, setUpdateInfo] = useState<IRoleInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
   // 抽屉配置
@@ -64,23 +64,25 @@ const roles: FC<IProps> = () => {
     });
   }, []);
 
-  // 获取角色列表数据
-  const fetchRoleList = useCallback(async () => {
+  // 获取表格数据
+  const fetchTableData = useCallback(async () => {
     setTableLoading(true);
     const result = await getRoleListService(searchInfo);
-    setRoleList(result.data);
+    setTableList(result.data);
     setTotal(result.total);
     setTableLoading(false);
   }, [searchInfo]);
 
   useEffect(() => {
-    fetchRoleList();
-  }, [fetchRoleList]);
+    fetchTableData();
+  }, [fetchTableData]);
 
+  // 获取所有菜单数据
   useEffect(() => {
     dispatch(getAllMenuListAsyncThunk());
   }, [dispatch]);
 
+  // 更新配置信息
   useEffect(() => {
     setDrawerConfig((prevConfig) => {
       const newFormItems = prevConfig.formItems.map((item) => {
@@ -99,44 +101,44 @@ const roles: FC<IProps> = () => {
     });
   }, [allMenu]);
 
-  // 点击添加角色
-  const onClickCreateRole = useCallback(() => {
-    setEditRole(null);
+  // 点击添加
+  const onClickCreate = useCallback(() => {
+    setUpdateInfo(null);
     setDrawerVisible(true);
   }, []);
 
-  // 点击编辑角色
-  const onClickEditRole = useCallback((menu: IRoleInfo) => {
-    setEditRole(menu);
+  // 点击编辑
+  const onClickUpdate = useCallback((updateInfo: IRoleInfo) => {
+    setUpdateInfo(updateInfo);
     setDrawerVisible(true);
   }, []);
 
   // 关闭抽屉
   const onCloseDrawer = useCallback(() => {
-    setEditRole(null);
+    setUpdateInfo(null);
     drawerFormRef.current?.resetFields();
     setDrawerVisible(false);
   }, []);
 
   // 编辑菜单数据回显
   useEffect(() => {
-    if (editRole && drawerFormRef.current) {
-      drawerFormRef.current.setFieldsValue(editRole);
+    if (updateInfo && drawerFormRef.current) {
+      drawerFormRef.current.setFieldsValue(updateInfo);
     }
-  }, [editRole]);
+  }, [updateInfo]);
 
   // 抽屉表单提交
   const onClickDrawerFormSubmit = useCallback(
     async (values: any) => {
-      if (editRole) {
-        await updateRoleService({ ...values, id: editRole.id });
+      if (updateInfo) {
+        await updateRoleService({ ...values, id: updateInfo.id });
       } else {
         await createRoleService(values);
       }
       onCloseDrawer();
-      fetchRoleList();
+      fetchTableData();
     },
-    [editRole, fetchRoleList, onCloseDrawer]
+    [updateInfo, fetchTableData, onCloseDrawer]
   );
 
   return (
@@ -146,14 +148,14 @@ const roles: FC<IProps> = () => {
         handleSubmit={onSubmitSearchInfo}
         handleReset={onResetSearchInfo}
         otherBtns={
-          <Button icon={<PlusOutlined />} onClick={onClickCreateRole}>
+          <Button icon={<PlusOutlined />} onClick={onClickCreate}>
             添加权限
           </Button>
         }
       />
       <VrTable
         {...roleTableConfig}
-        data={roleList}
+        data={tableList}
         total={total}
         current={searchInfo.page}
         pageSize={searchInfo.size}
@@ -172,7 +174,7 @@ const roles: FC<IProps> = () => {
             align="center"
             render={(_: string, record: IRoleInfo) => (
               <Space size="middle">
-                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditRole(record)}>
+                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickUpdate(record)}>
                   编辑
                 </Button>
               </Space>
@@ -180,7 +182,7 @@ const roles: FC<IProps> = () => {
           />
         }
       />
-      <Drawer title={editRole ? '编辑角色' : '添加角色'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
+      <Drawer title={updateInfo ? '编辑角色' : '添加角色'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <VrForm
           ref={drawerFormRef}
           {...drawerConfig}

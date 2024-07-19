@@ -34,14 +34,14 @@ const menus: FC<IProps> = () => {
   });
   // 表格loading
   const [tableLoading, setTableLoading] = useState<boolean>(false);
-  // 菜单列表数据
-  const [menuList, setMenuList] = useState<IMenuInfo[]>([]);
-  // 菜单列表总数
+  // 表格数据
+  const [tableList, setTableList] = useState<IMenuInfo[]>([]);
+  // 表格总数
   const [total, setTotal] = useState<number>(0);
   // 抽屉显示隐藏
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  // 编辑的菜单数据
-  const [editMenu, setEditMenu] = useState<IMenuInfo | null>(null);
+  // 编辑的数据
+  const [updateInfo, setUpdateInfo] = useState<IMenuInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
 
@@ -62,60 +62,60 @@ const menus: FC<IProps> = () => {
     });
   }, []);
 
-  // 获取菜单列表数据
-  const fetchMenuList = useCallback(async () => {
+  // 请求表格数据
+  const fetchTableData = useCallback(async () => {
     setTableLoading(true);
     const res = await getMenuListService(searchInfo);
-    setMenuList(res.data);
+    setTableList(res.data);
     setTotal(res.total);
     setTableLoading(false);
   }, [searchInfo]);
 
   useEffect(() => {
-    fetchMenuList();
-  }, [fetchMenuList]);
+    fetchTableData();
+  }, [fetchTableData]);
 
-  // 点击添加菜单
-  const onClickCreateMenu = useCallback(() => {
-    setEditMenu(null);
+  // 点击添加
+  const onClickCreate = useCallback(() => {
+    setUpdateInfo(null);
     setDrawerVisible(true);
   }, []);
 
-  // 点击编辑菜单
-  const onClickEditMenu = useCallback((menu: IMenuInfo) => {
-    setEditMenu(menu);
+  // 点击编辑
+  const onClickUpdate = useCallback((updateInfo: IMenuInfo) => {
+    setUpdateInfo(updateInfo);
     setDrawerVisible(true);
   }, []);
 
-  // 编辑菜单数据回显
+  // 编辑数据回显
   useEffect(() => {
-    if (editMenu && drawerFormRef.current) {
+    if (updateInfo && drawerFormRef.current) {
       drawerFormRef.current.setFieldsValue({
-        ...editMenu,
-        menuPid: [editMenu.menuPid]
+        ...updateInfo,
+        menuPid: [updateInfo.menuPid]
       });
     }
-  }, [editMenu]);
+  }, [updateInfo]);
 
   // 抽屉表单提交
   const onClickDrawerFormSubmit = useCallback(
     async (values: any) => {
       const newMenuPid = values.menuPid[values.menuPid.length - 1];
       values.menuPid = newMenuPid;
-      if (editMenu) {
-        await updateMenuService({ ...values, id: editMenu.id });
+      if (updateInfo) {
+        await updateMenuService({ ...values, id: updateInfo.id });
       } else {
         await createMenuService(values);
       }
       onCloseDrawer();
-      fetchMenuList();
+      fetchTableData();
     },
-    [editMenu]
+    [updateInfo]
   );
 
   // 关闭抽屉
   const onCloseDrawer = useCallback(() => {
-    setEditMenu(null);
+    setUpdateInfo(null);
     drawerFormRef.current?.resetFields();
     setDrawerVisible(false);
   }, []);
@@ -140,14 +140,14 @@ const menus: FC<IProps> = () => {
         handleSubmit={onSubmitSearchInfo}
         handleReset={onResetSearchInfo}
         otherBtns={
-          <Button onClick={onClickCreateMenu} icon={<PlusOutlined />}>
+          <Button onClick={onClickCreate} icon={<PlusOutlined />}>
             添加菜单
           </Button>
         }
       />
       <VrTable
         {...menuTableConfig}
-        data={menuList}
+        data={tableList}
         total={total}
         current={searchInfo.page}
         pageSize={searchInfo.size}
@@ -166,7 +166,7 @@ const menus: FC<IProps> = () => {
             align="center"
             render={(_: string, record: IMenuInfo) => (
               <Space size="middle">
-                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditMenu(record)}>
+                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickUpdate(record)}>
                   编辑
                 </Button>
               </Space>
@@ -174,7 +174,7 @@ const menus: FC<IProps> = () => {
           />
         }
       />
-      <Drawer title={editMenu ? '编辑菜单' : '添加菜单'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
+      <Drawer title={updateInfo ? '编辑菜单' : '添加菜单'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <VrForm
           ref={drawerFormRef}
           {...menuDrawerConfig}

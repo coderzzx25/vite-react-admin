@@ -1,16 +1,19 @@
-import VrForm from '@/components/VrForm/VrForm';
 import { memo, useEffect, useState, useCallback, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
-import userFormConfig from './form.config';
+
+import { Table, Space, Button, Drawer } from 'antd';
+import { FormInstance } from 'antd/lib';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+
+import { getUserListService, createUserService, updateUserService } from '@/service/modules/systems/user';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllRoleListAsyncThunk } from '@/store/modules/systems';
 import { IUserListParams, IUserInfo } from '@/types/systems/user';
+
+import VrForm from '@/components/VrForm/VrForm';
 import VrTable from '@/components/VrTable/VrTable';
+import userFormConfig from './form.config';
 import userTableConfig from './table.config';
-import { getUserListService, createUserService, updateUserService } from '@/service/modules/systems/user';
-import { Table, Space, Button, Drawer } from 'antd';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
-import { FormInstance } from 'antd/lib';
 import userDrawerConfig from './drawer.config';
 
 interface IProps {
@@ -23,28 +26,26 @@ const users: FC<IProps> = () => {
   const dispatch = useAppDispatch();
   const { allRole } = useAppSelector((state) => state.systems, useAppShallowEqual);
   const [formConfig, setFormConfig] = useState(userFormConfig);
-
   const [searchInfo, setSearchInfo] = useState<IUserListParams>({
     page: 1,
     size: 10
   });
   // 表格loading
   const [tableLoading, setTableLoading] = useState<boolean>(false);
-
-  // 列表数据
-  const [userList, setUserList] = useState<IUserInfo[]>([]);
-  // 列表总数
+  // 表格数据
+  const [tableList, setTableList] = useState<IUserInfo[]>([]);
+  // 表格总数
   const [total, setTotal] = useState<number>(0);
-
   // 抽屉显示隐藏
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  // 编辑的角色数据
-  const [editUser, setEditUser] = useState<IUserInfo | null>(null);
+  // 编辑的数据
+  const [updateInfo, setUpdateInfo] = useState<IUserInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
   // 抽屉配置
   const [drawerConfig, setDrawerConfig] = useState(userDrawerConfig);
 
+  // 提交查询条件
   const onSubmitSearchInfo = useCallback((values: Record<string, any>) => {
     setSearchInfo((prev) => ({
       ...prev,
@@ -52,6 +53,7 @@ const users: FC<IProps> = () => {
     }));
   }, []);
 
+  // 重置查询条件
   const onResetSearchInfo = useCallback((values: Record<string, any>) => {
     setSearchInfo({
       page: 1,
@@ -60,22 +62,70 @@ const users: FC<IProps> = () => {
     });
   }, []);
 
-  const fetchUserList = useCallback(async () => {
+  // 请求数据
+  const fetchTableData = useCallback(async () => {
     setTableLoading(true);
     const result = await getUserListService(searchInfo);
-    setUserList(result.data);
+    setTableList(result.data);
     setTotal(result.total);
     setTableLoading(false);
   }, [searchInfo]);
 
   useEffect(() => {
-    fetchUserList();
-  }, [fetchUserList]);
+    fetchTableData();
+  }, [fetchTableData]);
 
+  // 点击添加
+  const onClickCreate = useCallback(() => {
+    setUpdateInfo(null);
+    setDrawerVisible(true);
+  }, []);
+
+  // 点击编辑
+  const onClickUpdate = useCallback((menu: IUserInfo) => {
+    setUpdateInfo(menu);
+    setDrawerVisible(true);
+  }, []);
+
+  // 关闭抽屉
+  const onCloseDrawer = useCallback(() => {
+    setUpdateInfo(null);
+    drawerFormRef.current?.resetFields();
+    setDrawerVisible(false);
+  }, []);
+
+  useEffect(() => {
+    if (updateInfo && drawerFormRef.current) {
+      drawerFormRef.current.setFieldsValue({
+        ...updateInfo,
+        userRole: updateInfo.userRole.id
+      });
+    }
+  }, [updateInfo]);
+
+  // 抽屉表单提交
+  const onClickDrawerFormSubmit = useCallback(
+    async (values: any) => {
+      if (updateInfo) {
+        await updateUserService({
+          ...values,
+          id: updateInfo.id
+        });
+      } else {
+        await createUserService(values);
+      }
+      onCloseDrawer();
+      fetchTableData();
+    },
+    [updateInfo, fetchTableData, onCloseDrawer]
+  );
+
+  // 请求角色列表
   useEffect(() => {
     dispatch(getAllRoleListAsyncThunk());
   }, [dispatch]);
 
+  // 更新配置信息
   useEffect(() => {
     setFormConfig((prevConfig) => {
       const newFormItems = prevConfig.formItems.map((item) => {
@@ -115,51 +165,6 @@ const users: FC<IProps> = () => {
       };
     });
   }, [allRole]);
-
-  // 点击添加角色
-  const onClickCreateRole = useCallback(() => {
-    setEditUser(null);
-    setDrawerVisible(true);
-  }, []);
-
-  // 点击编辑角色
-  const onClickEditRole = useCallback((menu: IUserInfo) => {
-    setEditUser(menu);
-    setDrawerVisible(true);
-  }, []);
-
-  // 关闭抽屉
-  const onCloseDrawer = useCallback(() => {
-    setEditUser(null);
-    drawerFormRef.current?.resetFields();
-    setDrawerVisible(false);
-  }, []);
-
-  useEffect(() => {
-    if (editUser && drawerFormRef.current) {
-      drawerFormRef.current.setFieldsValue({
-        ...editUser,
-        userRole: editUser.userRole.id
-      });
-    }
-  }, [editUser]);
-
-  // 抽屉表单提交
-  const onClickDrawerFormSubmit = useCallback(
-    async (values: any) => {
-      if (editUser) {
-        await updateUserService({
-          ...values,
-          id: editUser.id
-        });
-      } else {
-        await createUserService(values);
-      }
-      onCloseDrawer();
-      fetchUserList();
-    },
-    [editUser, fetchUserList, onCloseDrawer]
-  );
   return (
     <div>
       <VrForm
@@ -167,14 +172,14 @@ const users: FC<IProps> = () => {
         handleSubmit={onSubmitSearchInfo}
         handleReset={onResetSearchInfo}
         otherBtns={
-          <Button icon={<PlusOutlined />} onClick={onClickCreateRole}>
+          <Button icon={<PlusOutlined />} onClick={onClickCreate}>
             添加用户
           </Button>
         }
       />
       <VrTable
         {...userTableConfig}
-        data={userList}
+        data={tableList}
         total={total}
         current={searchInfo.page}
         pageSize={searchInfo.size}
@@ -193,7 +198,7 @@ const users: FC<IProps> = () => {
             align="center"
             render={(_: string, record: IUserInfo) => (
               <Space size="middle">
-                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEditRole(record)}>
+                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickUpdate(record)}>
                   编辑
                 </Button>
               </Space>
@@ -201,7 +206,7 @@ const users: FC<IProps> = () => {
           />
         }
       />
-      <Drawer title={editUser ? '编辑用户' : '新增用户'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
+      <Drawer title={updateInfo ? '编辑用户' : '新增用户'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <VrForm
           ref={drawerFormRef}
           {...drawerConfig}
