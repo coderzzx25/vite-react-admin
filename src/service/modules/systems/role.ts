@@ -1,5 +1,5 @@
 import VrRequest from '@/service';
-import { IRoleListParams, IRoleList, ICreateRoleParams, IUpdateRoleParams } from '@/types/systems/role';
+import { IRoleListParams, IRoleList, ICreateRoleParams, IUpdateRoleParams, IRoleInfo } from '@/types/systems/role';
 
 export const getRoleListService = (data: IRoleListParams) => {
   return VrRequest.get<IRoleList>({
@@ -19,5 +19,11 @@ export const updateRoleService = (data: IUpdateRoleParams) => {
   return VrRequest.post({
     url: '/roles/update-role',
     data
+  });
+};
+
+export const getAllRoleListService = () => {
+  return VrRequest.get<IRoleInfo[]>({
+    url: '/roles/all-role-list'
   });
 };
