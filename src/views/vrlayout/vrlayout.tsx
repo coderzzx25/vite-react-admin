@@ -39,7 +39,7 @@ const Vrlayout: FC<IProps> = () => {
 
   // 判断是否登录
   useEffect(() => {
-    if (!userInfo && accessToken && pathname !== '/login') {
+    if (!userInfo && !accessToken && pathname !== '/login') {
       navigate('/login');
     }
   }, [userInfo, pathname, navigate]);
