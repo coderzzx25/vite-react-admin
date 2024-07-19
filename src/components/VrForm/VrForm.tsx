@@ -68,11 +68,12 @@ const VrForm = forwardRef<FormInstance, IVrFormProps>(
           <Form.Item noStyle shouldUpdate>
             {({ getFieldValue }) => (
               <Tree
-                checkable
+                multiple
+                defaultExpandAll
                 treeData={item.treeData}
                 fieldNames={item.treeFieldNames}
-                checkedKeys={getFieldValue(item.key)}
-                onCheck={(checkedKeys) => vrForm.setFieldsValue({ [item.key]: checkedKeys })}
+                selectedKeys={getFieldValue(item.key)}
+                onSelect={(checkedKeys) => vrForm.setFieldsValue({ [item.key]: checkedKeys })}
               />
             )}
           </Form.Item>

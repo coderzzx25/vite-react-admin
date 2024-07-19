@@ -32,6 +32,9 @@ const App: FC<IProps> = () => {
           Menu: {
             itemBg: isDark ? '#141414' : '',
             subMenuItemBg: isDark ? '#141414' : ''
+          },
+          Tree: {
+            nodeSelectedBg: isDark ? primaryColor : '#e6f7ff'
           }
         }
       }}
