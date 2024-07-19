@@ -5,6 +5,7 @@ import { BASE_URL, TIME_OUT } from './config';
 import Request from './request';
 import { message } from 'antd';
 import store from '@/store';
+import axios, { AxiosError } from 'axios';
 
 // 统一的请求对象
 const VrRequest = new Request({
@@ -29,8 +30,13 @@ const VrRequest = new Request({
     },
     responseFailureFn: (error) => {
       NProgress.done();
-      const errorMessage = (error.response?.data as { message?: string })?.message || '请求失败';
-      message.error(errorMessage);
+      if (axios.isCancel(error)) {
+        message.warning('请勿频繁操作');
+      } else {
+        const axiosError = error as AxiosError;
+        const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';
+        message.error(errorMessage);
+      }
     }
   }
 });

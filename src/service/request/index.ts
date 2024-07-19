@@ -4,14 +4,21 @@ import type { RequestConfig } from './type';
 
 class Request {
   instance: AxiosInstance;
+  pendingRequests: Map<string, AbortController>;
 
   // request实例 => axios的实例
   constructor(config: RequestConfig) {
     this.instance = axios.create(config);
+    this.pendingRequests = new Map();
 
     // 每个instance实例都添加拦截器
     this.instance.interceptors.request.use(
       (config) => {
+        this.cancelPendingRequest(config);
+        const controller = new AbortController();
+        config.signal = controller.signal;
+        const requestKey = this.getRequestKey(config);
+        this.pendingRequests.set(requestKey, controller);
         return config;
       },
       (err) => {
@@ -20,9 +27,11 @@ class Request {
     );
     this.instance.interceptors.response.use(
       (res) => {
+        this.removePendingRequest(res.config);
         return Promise.resolve(res);
       },
       (err) => {
+        this.removePendingRequest(err.config);
         return Promise.reject(err);
       }
     );
@@ -36,6 +45,26 @@ class Request {
       config.interceptors?.responseSuccessFn,
       config.interceptors?.responseFailureFn
     );
+  }
+
+  getRequestKey(config: RequestConfig): string {
+    return `${config.method}:${config.url}`;
+  }
+
+  cancelPendingRequest(config: RequestConfig) {
+    const requestKey = this.getRequestKey(config);
+    if (this.pendingRequests.has(requestKey)) {
+      const controller = this.pendingRequests.get(requestKey);
+      controller?.abort();
+      this.pendingRequests.delete(requestKey);
+    }
+  }
+
+  removePendingRequest(config: RequestConfig) {
+    const requestKey = this.getRequestKey(config);
+    if (this.pendingRequests.has(requestKey)) {
+      this.pendingRequests.delete(requestKey);
+    }
   }
 
   // 封装网络请求的方法
@@ -57,7 +86,11 @@ class Request {
           resolve(res);
         })
         .catch((err) => {
-          reject(err);
+          if (axios.isCancel(err)) {
+            reject(new Error('请求被取消'));
+          } else {
+            reject(err);
+          }
         });
     });
   }

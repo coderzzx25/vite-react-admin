@@ -1,8 +1,6 @@
 import { memo, forwardRef, useImperativeHandle, useCallback } from 'react';
-
-import { Button, Cascader, Col, Form, Input, Row, Select, Space } from 'antd';
+import { Button, Cascader, Col, Form, Input, Row, Select, Space, Tree } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
-
 import { IOptions, IVrFormProps, IFormItem } from './type';
 import { FormInstance } from 'antd/lib';
 
@@ -36,31 +34,62 @@ const VrForm = forwardRef<FormInstance, IVrFormProps>(
       handleReset && handleReset(initialValues);
     }, [vrForm, handleReset, initialValues]);
 
+    const renderFormItem = (item: IFormItem) => {
+      if (item.type === 'input') {
+        return <Input placeholder={item.placeholder} />;
+      }
+
+      if (item.type === 'select') {
+        return (
+          <Select placeholder={item.placeholder} allowClear>
+            {item.options &&
+              item.options.map((option: IOptions) => (
+                <Select.Option key={option.value} value={option.value}>
+                  {option.label}
+                </Select.Option>
+              ))}
+          </Select>
+        );
+      }
+
+      if (item.type === 'cascader') {
+        return (
+          <Cascader
+            options={item.fieldNamesOptions}
+            fieldNames={item.fieldNames}
+            changeOnSelect={item.cascaderChangeOnSelect}
+            placeholder={item.placeholder}
+          />
+        );
+      }
+
+      if (item.type === 'tree') {
+        return (
+          <Form.Item noStyle shouldUpdate>
+            {({ getFieldValue }) => (
+              <Tree
+                multiple
+                defaultExpandAll
+                treeData={item.treeData}
+                fieldNames={item.treeFieldNames}
+                selectedKeys={getFieldValue(item.key)}
+                onSelect={(checkedKeys) => vrForm.setFieldsValue({ [item.key]: checkedKeys })}
+              />
+            )}
+          </Form.Item>
+        );
+      }
+
+      return null;
+    };
+
     return (
       <Form ref={ref} form={vrForm} onFinish={handleSubmit} autoComplete="off" initialValues={initialValues}>
         <Row gutter={gutter}>
           {formItems.map((item: IFormItem) => (
             <Col {...col} key={item.key}>
               <Form.Item label={item.label} name={item.key} rules={item.rules}>
-                {item.type === 'input' && <Input placeholder={item.placeholder} />}
-                {item.type === 'select' && (
-                  <Select placeholder={item.placeholder} allowClear>
-                    {item.options &&
-                      item.options.map((item: IOptions) => (
-                        <Select.Option key={item.value} value={item.value}>
-                          {item.label}
-                        </Select.Option>
-                      ))}
-                  </Select>
-                )}
-                {item.type === 'cascader' && (
-                  <Cascader
-                    options={item.fieldNamesOptions}
-                    fieldNames={item.fieldNames}
-                    changeOnSelect={item.cascaderChangeOnSelect}
-                    placeholder={item.placeholder}
-                  />
-                )}
+                {renderFormItem(item)}
               </Form.Item>
             </Col>
           ))}

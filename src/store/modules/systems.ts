@@ -1,23 +1,25 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getRoleMenuListService } from '@/service/modules/systems/menu';
-import { IMenu, IPermission, IUserMenuInfo } from '@/types/systems/menu';
+import { getAllMenuListService, getRoleMenuListService } from '@/service/modules/systems/menu';
+import { IMenu } from '@/types/systems/menu';
 
 interface ISystemsState {
   userMenu: IMenu[];
-  userPermissions: IPermission[];
+  allMenu: IMenu[];
 }
 
 const systemsSlice = createSlice({
   name: 'systems',
   initialState: {
     userMenu: [],
-    userPermissions: []
+    allMenu: []
   } as ISystemsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getRoleMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IUserMenuInfo>) => {
-      state.userMenu = payload.menus;
-      state.userPermissions = payload.permissions;
+    builder.addCase(getRoleMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenu[]>) => {
+      state.userMenu = payload;
+    });
+    builder.addCase(getAllMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenu[]>) => {
+      state.allMenu = payload;
     });
   }
 });
@@ -36,3 +38,12 @@ export const getRoleMenuListAsyncThunk = createAsyncThunk(
     return result;
   }
 );
+
+/**
+ * 获取所有菜单
+ * @returns {Promise<IMenu[]>}
+ */
+export const getAllMenuListAsyncThunk = createAsyncThunk('systems/getAllMenuListAsyncThunk', async () => {
+  const result = await getAllMenuListService();
+  return result;
+});

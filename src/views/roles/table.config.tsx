@@ -1,7 +1,7 @@
 import { Tag } from 'antd';
 import { ITableConfig } from '@/components/VrTable/type';
 
-const permissionTableConfig: ITableConfig = {
+const roleTableConfig: ITableConfig = {
   bordered: true,
   rowKey: 'id',
   tableColumns: [
@@ -12,25 +12,19 @@ const permissionTableConfig: ITableConfig = {
       align: 'center'
     },
     {
-      title: '权限名',
-      dataIndex: 'permissionName',
-      key: 'permissionName',
+      title: '角色名',
+      dataIndex: 'roleName',
+      key: 'roleName',
       align: 'center'
     },
     {
-      title: '权限值',
-      dataIndex: 'permissionValue',
-      key: 'permissionValue',
+      title: '角色菜单',
+      dataIndex: 'roleMenus',
+      key: 'roleMenus',
       align: 'center'
     },
     {
-      title: '菜单ID',
-      dataIndex: 'menuId',
-      key: 'menuId',
-      align: 'center'
-    },
-    {
-      title: '权限状态',
+      title: '角色状态',
       dataIndex: 'status',
       key: 'status',
       align: 'center',
@@ -51,4 +45,4 @@ const permissionTableConfig: ITableConfig = {
   ]
 };
 
-export default permissionTableConfig;
+export default roleTableConfig;
