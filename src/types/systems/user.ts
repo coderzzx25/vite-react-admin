@@ -24,3 +24,15 @@ export interface IUserList {
   total: number;
   data: IUserInfo[];
 }
+
+export interface IUserAddParams {
+  userName: string;
+  userNick: string;
+  userHead: string;
+  userRole: number;
+  status: number;
+}
+
+export interface IUserUpdateParams extends IUserAddParams {
+  id: number;
+}

@@ -7,7 +7,7 @@ import { getAllRoleListAsyncThunk } from '@/store/modules/systems';
 import { IUserListParams, IUserInfo } from '@/types/systems/user';
 import VrTable from '@/components/VrTable/VrTable';
 import userTableConfig from './table.config';
-import { getUserListService } from '@/service/modules/systems/user';
+import { getUserListService, createUserService, updateUserService } from '@/service/modules/systems/user';
 import { Table, Space, Button, Drawer } from 'antd';
 import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib';
@@ -139,7 +139,7 @@ const users: FC<IProps> = () => {
     if (editUser && drawerFormRef.current) {
       drawerFormRef.current.setFieldsValue({
         ...editUser,
-        userRole: editUser.id
+        userRole: editUser.userRole.id
       });
     }
   }, [editUser]);
@@ -148,9 +148,12 @@ const users: FC<IProps> = () => {
   const onClickDrawerFormSubmit = useCallback(
     async (values: any) => {
       if (editUser) {
-        console.log(values);
+        await updateUserService({
+          ...values,
+          id: editUser.id
+        });
       } else {
-        console.log(values);
+        await createUserService(values);
       }
       onCloseDrawer();
       fetchUserList();
