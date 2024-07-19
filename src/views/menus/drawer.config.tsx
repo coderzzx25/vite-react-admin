@@ -28,6 +28,7 @@ const menuDrawerConfig: IVrFormProps = {
       defaultValue: '',
       type: 'cascader',
       placeholder: '请选择父菜单',
+      cascaderChangeOnSelect: true,
       fieldNamesOptions: [],
       fieldNames: {
         label: 'menuName',
