@@ -29,7 +29,7 @@ interface IProps {
 
 const { Column } = Table;
 
-const menus: FC<IProps> = () => {
+const permissions: FC<IProps> = () => {
   const { userPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
   // 查询条件
   const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({
@@ -197,4 +197,4 @@ const menus: FC<IProps> = () => {
   );
 };
 
-export default memo(menus);
+export default memo(permissions);

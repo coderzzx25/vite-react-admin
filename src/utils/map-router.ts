@@ -75,9 +75,9 @@ export const getParentMenuUrl = (permissions: IPermissionInfo[], url: string): s
   return parentUrl;
 };
 
-export const searchRouter = (url: string, menus: IPermissionInfo[]): IPermissionInfo | null => {
-  if (!Array.isArray(menus)) return null;
-  for (const item of menus) {
+export const searchRouter = (url: string, permissions: IPermissionInfo[]): IPermissionInfo | null => {
+  if (!Array.isArray(permissions)) return null;
+  for (const item of permissions) {
     if (item.permissionUrl === url) return item;
     if (item.children?.length) {
       const result = searchRouter(url, item.children);

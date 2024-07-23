@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useState, useCallback } from 'react';
 import type { FC, ReactNode } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { Layout, Tabs, Typography } from 'antd';
+import { Layout, Tabs, Typography, Watermark } from 'antd';
 import classNames from 'classnames';
 
 import VrLayoutWrapper from './style';
@@ -183,7 +183,9 @@ const Vrlayout: FC<IProps> = () => {
               }
             }}
           ></Tabs>
-          <Outlet />
+          <Watermark className="view" content={[`${userInfo?.userAccount}`, `${userInfo?.userName}`]}>
+            <Outlet />
+          </Watermark>
         </Content>
       </Layout>
     </VrLayoutWrapper>

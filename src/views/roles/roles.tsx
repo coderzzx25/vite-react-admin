@@ -77,7 +77,7 @@ const roles: FC<IProps> = () => {
     fetchTableData();
   }, [fetchTableData]);
 
-  // 获取所有菜单数据
+  // 获取所有权限数据
   useEffect(() => {
     dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
@@ -120,7 +120,7 @@ const roles: FC<IProps> = () => {
     setDrawerVisible(false);
   }, []);
 
-  // 编辑菜单数据回显
+  // 编辑权限数据回显
   useEffect(() => {
     if (updateInfo && drawerFormRef.current) {
       drawerFormRef.current.setFieldsValue(updateInfo);

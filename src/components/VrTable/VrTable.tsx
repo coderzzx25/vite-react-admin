@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import type { FC, ReactNode } from 'react';
 
 import { Table, TableProps } from 'antd';
@@ -15,6 +15,8 @@ interface IProps {
   pageSize?: number;
   bordered?: boolean;
   actionColumn?: ReactNode;
+  className?: string;
+  containerHeight?: number;
 }
 
 const { Column } = Table;
@@ -29,14 +31,33 @@ const VrTable: FC<IProps> = ({
   current,
   pageSize,
   bordered,
-  actionColumn
+  actionColumn,
+  className,
+  containerHeight = 550
 }) => {
+  const [tableScroll, setTableScroll] = useState<{ y: number }>({ y: containerHeight });
+
+  useEffect(() => {
+    const updateTableScroll = () => {
+      const availableHeight = window.innerHeight - 400;
+      setTableScroll({ y: availableHeight });
+    };
+
+    updateTableScroll();
+    window.addEventListener('resize', updateTableScroll);
+
+    return () => {
+      window.removeEventListener('resize', updateTableScroll);
+    };
+  }, []);
   return (
     <Table
+      className={className}
       dataSource={data}
       loading={loading}
       bordered={bordered}
       rowKey={rowKey}
+      scroll={tableScroll}
       pagination={{
         showSizeChanger: true,
         showQuickJumper: true,

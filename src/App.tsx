@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import type { FC, ReactNode } from 'react';
 import { HashRouter } from 'react-router-dom';
-import { ConfigProvider, Watermark, theme } from 'antd';
+import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 
 import Routers from '@/router';
@@ -13,7 +13,6 @@ interface IProps {
 
 const App: FC<IProps> = () => {
   const { primaryColor, isDark } = useAppSelector((state) => state.main, useAppShallowEqual);
-  const { userInfo } = useAppSelector((state) => state.auths, useAppShallowEqual);
   return (
     <ConfigProvider
       locale={zhCN}
@@ -40,9 +39,7 @@ const App: FC<IProps> = () => {
       }}
     >
       <HashRouter>
-        <Watermark content={[`${userInfo?.userName}`, `${userInfo?.userNickName}`]}>
-          <Routers />
-        </Watermark>
+        <Routers />
       </HashRouter>
     </ConfigProvider>
   );

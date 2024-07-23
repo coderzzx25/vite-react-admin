@@ -15,6 +15,7 @@ import VrTable from '@/components/VrTable/VrTable';
 import userFormConfig from './form.config';
 import userTableConfig from './table.config';
 import userDrawerConfig from './drawer.config';
+import UserWrapper from './type';
 
 interface IProps {
   children?: ReactNode;
@@ -166,7 +167,7 @@ const users: FC<IProps> = () => {
     });
   }, [allRole]);
   return (
-    <div>
+    <UserWrapper>
       <VrForm
         {...formConfig}
         handleSubmit={onSubmitSearchInfo}
@@ -178,6 +179,7 @@ const users: FC<IProps> = () => {
         }
       />
       <VrTable
+        className="table"
         {...userTableConfig}
         data={tableList}
         total={total}
@@ -221,7 +223,7 @@ const users: FC<IProps> = () => {
           }
         />
       </Drawer>
-    </div>
+    </UserWrapper>
   );
 };
 
