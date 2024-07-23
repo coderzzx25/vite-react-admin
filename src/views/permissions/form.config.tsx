@@ -1,4 +1,4 @@
-import { DATA_STATUS, PERMISSION_TYPE } from '@/global/config/type.config';
+import { DATA_STATUS } from '@/global/config/type.config';
 import { IVrFormProps } from '@/components/VrForm/type';
 
 const permissionFormConfig: IVrFormProps = {
@@ -12,13 +12,6 @@ const permissionFormConfig: IVrFormProps = {
       label: '权限名',
       type: 'input',
       placeholder: '请输入权限名'
-    },
-    {
-      key: 'permissionType',
-      label: '权限类型',
-      type: 'select',
-      placeholder: '请选择权限类型',
-      options: PERMISSION_TYPE
     },
     {
       key: 'status',
