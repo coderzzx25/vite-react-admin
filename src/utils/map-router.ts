@@ -10,6 +10,7 @@ import { createElement } from 'react';
  */
 const customIcons: { [key: string]: any } = Icons;
 export const mapIcon = (icon: string) => {
+  if (!icon) return '';
   return createElement(customIcons[icon]);
 };
 
