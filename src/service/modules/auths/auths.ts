@@ -12,3 +12,17 @@ export const userLoginService = (data: IAccountLoginBody) => {
     data
   });
 };
+
+/**
+ * 刷新token
+ * @param {string} refreshToken 刷新token
+ * @returns {Promise<{accessToken:string, refreshToken:string}>} 返回新的token
+ */
+export const refreshTokenService = (refreshToken: string) => {
+  return VrRequest.post<{ accessToken: string; refreshToken: string }>({
+    url: '/auths/refresh-token',
+    data: {
+      refreshToken
+    }
+  });
+};

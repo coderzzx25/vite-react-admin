@@ -6,6 +6,7 @@ import Request from './request';
 import { message } from 'antd';
 import store from '@/store';
 import axios, { AxiosError } from 'axios';
+import { refreshTokenAsyncThunk } from '@/store/modules/auths';
 
 // 统一的请求对象
 const VrRequest = new Request({
@@ -22,21 +23,36 @@ const VrRequest = new Request({
     },
     requestFailureFn: (error) => {
       NProgress.done();
-      return error;
+      return Promise.reject(error);
     },
     responseSuccessFn: (response) => {
       NProgress.done();
       return response.data;
     },
-    responseFailureFn: (error) => {
+    responseFailureFn: async (error) => {
       NProgress.done();
+
       if (axios.isCancel(error)) {
         message.warning('请勿频繁操作');
+        return Promise.reject(error);
+      }
+
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response?.status === 401) {
+        message.warning('正在刷新token，请稍后重试');
+        try {
+          await store.dispatch(refreshTokenAsyncThunk());
+          message.success('刷新token成功，请重新操作');
+        } catch {
+          message.error('刷新token失败，请重新登录');
+        }
       } else {
-        const axiosError = error as AxiosError;
         const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';
         message.error(errorMessage);
       }
+
+      return Promise.reject(error);
     }
   }
 });
