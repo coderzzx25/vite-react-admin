@@ -14,7 +14,7 @@ export interface IRoleListParams {
 export interface IRoleInfo {
   id: number;
   roleName: string;
-  roleMenus: number[];
+  rolePermission: number[];
   status: number;
   createTime: string;
   updateTime: string;
@@ -33,7 +33,7 @@ export interface IRoleListResponseInfo {
  */
 export interface ICreateRoleBody {
   roleName: string;
-  roleMenus: number[];
+  rolePermissions: number[];
   status: number;
 }
 

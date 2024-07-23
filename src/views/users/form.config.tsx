@@ -3,23 +3,23 @@ import { IVrFormProps } from '@/components/VrForm/type';
 
 const userFormConfig: IVrFormProps = {
   initialValues: {
+    userAccount: '',
     userName: '',
-    userNick: '',
     userRole: undefined,
     status: undefined
   },
   formItems: [
     {
-      key: 'userName',
-      label: '用户名',
+      key: 'userAccount',
+      label: '账户',
       type: 'input',
       placeholder: '请输入用户名'
     },
     {
-      key: 'userNick',
-      label: '昵称',
+      key: 'userName',
+      label: '姓名',
       type: 'input',
-      placeholder: '请输入昵称'
+      placeholder: '请输入姓名'
     },
     {
       key: 'userRole',

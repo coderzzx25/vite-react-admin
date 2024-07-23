@@ -18,8 +18,8 @@ const roleTableConfig: ITableConfig = {
       align: 'center'
     },
     {
-      title: '角色菜单',
-      dataIndex: 'roleMenus',
+      title: '角色权限',
+      dataIndex: 'rolePermissions',
       key: 'roleMenus',
       align: 'center'
     },

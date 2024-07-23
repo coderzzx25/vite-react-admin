@@ -2,7 +2,7 @@
  * 账户登录请求参数
  */
 export interface IAccountLoginBody {
-  userName: string;
+  userAccount: string;
   userPassword: string;
 }
 
@@ -10,9 +10,9 @@ export interface IAccountLoginBody {
  * 用户信息
  */
 export interface IUserInfo {
+  userAccount: string;
   userName: string;
-  userNickName: string;
-  userHead: string;
+  userAvatar: string;
   roleId: number;
 }
 

@@ -7,16 +7,20 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import MenusWrapper from './style';
 
-import { getMenuListService, createMenuService, updateMenuService } from '@/service/modules/systems/menu';
+import {
+  getPermissionListService,
+  createPermissionService,
+  updatePermissionService
+} from '@/service/modules/systems/permission';
 import { useAppSelector, useAppShallowEqual } from '@/store';
 
 import VrForm from '@/components/VrForm/VrForm';
 import VrTable from '@/components/VrTable/VrTable';
-import menuTableConfig from './table.config';
-import menuDrawerConfig from './drawer.config';
-import menuFormConfig from './form.config';
+import permissionTableConfig from './table.config';
+import permissionDrawerConfig from './drawer.config';
+import permissionFormConfig from './form.config';
 
-import { IMenuInfo, IMenuListParams } from '@/types/systems/menu';
+import { IPermissionInfo, IPermissionListParams } from '@/types/systems/permission';
 import { noMenuPid } from '@/global/data/data.config';
 
 interface IProps {
@@ -25,23 +29,23 @@ interface IProps {
 
 const { Column } = Table;
 
-const menus: FC<IProps> = () => {
-  const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
+const permissions: FC<IProps> = () => {
+  const { userPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
   // 查询条件
-  const [searchInfo, setSearchInfo] = useState<IMenuListParams>({
+  const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({
     page: 1,
     size: 10
   });
   // 表格loading
   const [tableLoading, setTableLoading] = useState<boolean>(false);
   // 表格数据
-  const [tableList, setTableList] = useState<IMenuInfo[]>([]);
+  const [tableList, setTableList] = useState<IPermissionInfo[]>([]);
   // 表格总数
   const [total, setTotal] = useState<number>(0);
   // 抽屉显示隐藏
   const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
   // 编辑的数据
-  const [updateInfo, setUpdateInfo] = useState<IMenuInfo | null>(null);
+  const [updateInfo, setUpdateInfo] = useState<IPermissionInfo | null>(null);
   // 抽屉表单实例
   const drawerFormRef = useRef<FormInstance>(null);
 
@@ -65,7 +69,7 @@ const menus: FC<IProps> = () => {
   // 请求表格数据
   const fetchTableData = useCallback(async () => {
     setTableLoading(true);
-    const res = await getMenuListService(searchInfo);
+    const res = await getPermissionListService(searchInfo);
     setTableList(res.data);
     setTotal(res.total);
     setTableLoading(false);
@@ -82,7 +86,7 @@ const menus: FC<IProps> = () => {
   }, []);
 
   // 点击编辑
-  const onClickUpdate = useCallback((updateInfo: IMenuInfo) => {
+  const onClickUpdate = useCallback((updateInfo: IPermissionInfo) => {
     setUpdateInfo(updateInfo);
     setDrawerVisible(true);
   }, []);
@@ -92,7 +96,7 @@ const menus: FC<IProps> = () => {
     if (updateInfo && drawerFormRef.current) {
       drawerFormRef.current.setFieldsValue({
         ...updateInfo,
-        menuPid: [updateInfo.menuPid]
+        permissionPid: [updateInfo.permissionPid]
       });
     }
   }, [updateInfo]);
@@ -103,9 +107,9 @@ const menus: FC<IProps> = () => {
       const newMenuPid = values.menuPid[values.menuPid.length - 1];
       values.menuPid = newMenuPid;
       if (updateInfo) {
-        await updateMenuService({ ...values, id: updateInfo.id });
+        await updatePermissionService({ ...values, id: updateInfo.id });
       } else {
-        await createMenuService(values);
+        await createPermissionService(values);
       }
       onCloseDrawer();
       fetchTableData();
@@ -120,13 +124,13 @@ const menus: FC<IProps> = () => {
     setDrawerVisible(false);
   }, []);
 
-  // 用户菜单数据
-  const memoizedUserMenu = useMemo(() => [noMenuPid, ...userMenu], [userMenu]);
+  // 用户权限数据
+  const memoizedUserMenu = useMemo(() => [noMenuPid, ...userPermission], [userPermission]);
 
-  // 用户菜单数据变化时更新formItems
+  // 用户权限数据变化时更新formItems
   useEffect(() => {
-    menuDrawerConfig.formItems = menuDrawerConfig.formItems.map((item) => {
-      if (item.key === 'menuPid') {
+    permissionDrawerConfig.formItems = permissionDrawerConfig.formItems.map((item) => {
+      if (item.key === 'permissionPid') {
         return { ...item, fieldNamesOptions: memoizedUserMenu };
       }
       return item;
@@ -136,17 +140,17 @@ const menus: FC<IProps> = () => {
   return (
     <MenusWrapper>
       <VrForm
-        {...menuFormConfig}
+        {...permissionFormConfig}
         handleSubmit={onSubmitSearchInfo}
         handleReset={onResetSearchInfo}
         otherBtns={
           <Button onClick={onClickCreate} icon={<PlusOutlined />}>
-            添加菜单
+            添加权限
           </Button>
         }
       />
       <VrTable
-        {...menuTableConfig}
+        {...permissionTableConfig}
         data={tableList}
         total={total}
         current={searchInfo.page}
@@ -164,7 +168,7 @@ const menus: FC<IProps> = () => {
             title="操作"
             key="action"
             align="center"
-            render={(_: string, record: IMenuInfo) => (
+            render={(_: string, record: IPermissionInfo) => (
               <Space size="middle">
                 <Button type="primary" icon={<EditOutlined />} onClick={() => onClickUpdate(record)}>
                   编辑
@@ -174,10 +178,10 @@ const menus: FC<IProps> = () => {
           />
         }
       />
-      <Drawer title={updateInfo ? '编辑菜单' : '添加菜单'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
+      <Drawer title={updateInfo ? '编辑权限' : '添加权限'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
         <VrForm
           ref={drawerFormRef}
-          {...menuDrawerConfig}
+          {...permissionDrawerConfig}
           handleSubmit={onClickDrawerFormSubmit}
           otherBtns={
             <Space>
@@ -193,4 +197,4 @@ const menus: FC<IProps> = () => {
   );
 };
 
-export default memo(menus);
+export default memo(permissions);

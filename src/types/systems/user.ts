@@ -6,8 +6,8 @@ import { IRoleInfo } from './role';
 export interface IUserListParams {
   page: number;
   size: number;
+  userAccount?: string;
   userName?: string;
-  userNick?: string;
   userRole?: number;
   status?: number;
 }
@@ -17,9 +17,9 @@ export interface IUserListParams {
  */
 export interface IUserInfo {
   id: number;
+  userAccount: string;
   userName: string;
-  userNick: string;
-  userHead: string;
+  userAvatar: string;
   userRole: IRoleInfo;
   status: number;
   createTime: string;
@@ -38,9 +38,9 @@ export interface IUserListResponseInfo {
  * 添加用户参数
  */
 export interface ICreateUserBody {
+  userAccount: string;
   userName: string;
-  userNick: string;
-  userHead: string;
+  userAvatar: string;
   userRole: number;
   status: number;
 }
