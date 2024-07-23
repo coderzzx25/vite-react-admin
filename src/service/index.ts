@@ -23,28 +23,36 @@ const VrRequest = new Request({
     },
     requestFailureFn: (error) => {
       NProgress.done();
-      return error;
+      return Promise.reject(error);
     },
     responseSuccessFn: (response) => {
       NProgress.done();
       return response.data;
     },
-    responseFailureFn: (error) => {
+    responseFailureFn: async (error) => {
       NProgress.done();
+
       if (axios.isCancel(error)) {
         message.warning('请勿频繁操作');
-      } else {
-        const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 401) {
-          message.warning('正在刷新token，请稍后重试');
-          store.dispatch(refreshTokenAsyncThunk()).then(() => {
-            message.success('刷新token成功，请重新操作');
-          });
-        } else {
-          const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';
-          message.error(errorMessage);
-        }
+        return Promise.reject(error);
       }
+
+      const axiosError = error as AxiosError;
+
+      if (axiosError.response?.status === 401) {
+        message.warning('正在刷新token，请稍后重试');
+        try {
+          await store.dispatch(refreshTokenAsyncThunk());
+          message.success('刷新token成功，请重新操作');
+        } catch {
+          message.error('刷新token失败，请重新登录');
+        }
+      } else {
+        const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';
+        message.error(errorMessage);
+      }
+
+      return Promise.reject(error);
     }
   }
 });
