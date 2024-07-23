@@ -25,7 +25,7 @@ interface IFormValues extends IAccountLoginBody {
 }
 
 const loginRules = {
-  userName: [
+  userAccount: [
     {
       required: true,
       message: '请输入账户'
@@ -43,15 +43,15 @@ const login: FC<IProps> = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const onLoginFinish = async (values: IFormValues) => {
-    const { userName, userPassword, remember } = values;
+    const { userAccount, userPassword, remember } = values;
     if (remember) {
-      localCache.setCache('userName', userName);
+      localCache.setCache('userAccount', userAccount);
       localCache.setCache('remember', remember);
     } else {
-      localCache.deleteCache('userName');
+      localCache.deleteCache('userAccount');
       localCache.deleteCache('remember');
     }
-    const loginResult = await userLoginService({ userName, userPassword });
+    const loginResult = await userLoginService({ userAccount, userPassword });
     if (!loginResult) return;
     dispatch(setLoginInfoReducer(loginResult));
     navigate('/');
@@ -64,12 +64,12 @@ const login: FC<IProps> = () => {
           className="form-content"
           autoComplete="off"
           initialValues={{
-            userName: localCache.getCache('userName') ?? '',
+            userAccount: localCache.getCache('userAccount') ?? '',
             remember: localCache.getCache('remember') ?? true
           }}
           onFinish={onLoginFinish}
         >
-          <Form.Item<IFormValues> name="userName" rules={loginRules.userName}>
+          <Form.Item<IFormValues> name="userAccount" rules={loginRules.userAccount}>
             <Input prefix={<UserOutlined />} placeholder="账户" />
           </Form.Item>
           <Form.Item<IFormValues> name="userPassword" rules={loginRules.userPassword}>

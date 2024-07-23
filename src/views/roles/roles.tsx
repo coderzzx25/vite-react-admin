@@ -7,7 +7,7 @@ import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import { getRoleListService, createRoleService, updateRoleService } from '@/service/modules/systems/role';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
-import { getAllMenuListAsyncThunk } from '@/store/modules/systems';
+import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 import type { IRoleListParams, IRoleInfo } from '@/types/systems/role';
 import VrTable from '@/components/VrTable/VrTable';
 import VrForm from '@/components/VrForm/VrForm';
@@ -23,7 +23,7 @@ const { Column } = Table;
 
 const roles: FC<IProps> = () => {
   const dispatch = useAppDispatch();
-  const { allMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
+  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
 
   // 查询条件
   const [searchInfo, setSearchInfo] = useState<IRoleListParams>({
@@ -79,17 +79,17 @@ const roles: FC<IProps> = () => {
 
   // 获取所有菜单数据
   useEffect(() => {
-    dispatch(getAllMenuListAsyncThunk());
+    dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
 
   // 更新配置信息
   useEffect(() => {
     setDrawerConfig((prevConfig) => {
       const newFormItems = prevConfig.formItems.map((item) => {
-        if (item.key === 'roleMenus') {
+        if (item.key === 'rolePermissions') {
           return {
             ...item,
-            treeData: allMenu
+            treeData: allPermission
           };
         }
         return item;
@@ -99,7 +99,7 @@ const roles: FC<IProps> = () => {
         formItems: newFormItems
       };
     });
-  }, [allMenu]);
+  }, [allPermission]);
 
   // 点击添加
   const onClickCreate = useCallback(() => {
@@ -149,7 +149,7 @@ const roles: FC<IProps> = () => {
         handleReset={onResetSearchInfo}
         otherBtns={
           <Button icon={<PlusOutlined />} onClick={onClickCreate}>
-            添加权限
+            添加角色
           </Button>
         }
       />

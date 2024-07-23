@@ -1,4 +1,4 @@
-import { IMenuInfo } from '@/types/systems/menu';
+import { IPermissionInfo } from '@/types/systems/permission';
 import * as Icons from '@ant-design/icons';
 import { MenuProps } from 'antd';
 import { createElement } from 'react';
@@ -14,71 +14,71 @@ export const mapIcon = (icon: string) => {
 };
 
 /**
- * @description 处理菜单数据
- * @param {IMenuInfo[]} menus 菜单数据
- * return {MenuItem[]} 处理后的菜单数据
+ * @description 处理权限数据
+ * @param {IPermissionInfo[]} permissions 权限数据
+ * return {Required<MenuProps>['items'][number][]} 处理后的权限数据
  */
-export const mapMenuToMenuItem = (menus: IMenuInfo[]): Required<MenuProps>['items'][number][] => {
-  return menus.map((item) => {
+export const mapPermissionToMenuItem = (permissions: IPermissionInfo[]): Required<MenuProps>['items'][number][] => {
+  return permissions.map((item) => {
     if (item.children) {
       return {
-        key: item.menuUrl,
-        label: item.menuName,
-        icon: mapIcon(item.menuIcon),
-        children: mapMenuToMenuItem(item.children)
+        key: item.permissionUrl,
+        label: item.permissionName,
+        icon: mapIcon(item.permissionIcon),
+        children: mapPermissionToMenuItem(item.children)
       };
     } else {
       return {
-        key: item.menuUrl,
-        label: item.menuName,
-        icon: mapIcon(item.menuIcon)
+        key: item.permissionUrl,
+        label: item.permissionName,
+        icon: mapIcon(item.permissionIcon)
       };
     }
   });
 };
 
 /**
- * @description 处理菜单一维数组
- * @param {IMenuInfo[]} menus 菜单数据
- * return {string[]} 处理后的菜单一维数组
+ * @description 处理权限一维数组
+ * @param {IPermissionInfo[]} permissions 权限数据
+ * return {string[]} 处理后的权限一维数组
  */
-export const mapMenuToUrl = (menus: IMenuInfo[]): string[] => {
-  if (!Array.isArray(menus)) return [];
-  return menus.reduce((prev: string[], current: IMenuInfo) => {
+export const mapPermissionToUrl = (permissions: IPermissionInfo[]): string[] => {
+  if (!Array.isArray(permissions)) return [];
+  return permissions.reduce((prev: string[], current: IPermissionInfo) => {
     if (current.children) {
-      return prev.concat(...mapMenuToUrl(current.children));
+      return prev.concat(...mapPermissionToUrl(current.children));
     }
-    return prev.concat(current.menuUrl);
+    return prev.concat(current.permissionUrl);
   }, []);
 };
 
 /**
- * @description 根据子菜单的url获取父菜单的url
- * @param {IMenu[]} menus 菜单数据
- * @param {string} url 子菜单的url
- * return {string} 父菜单的url
+ * @description 根据子权限的url获取父权限的url
+ * @param {IMenu[]} permissions 权限数据
+ * @param {string} url 子权限的url
+ * return {string} 父权限的url
  */
-export const getParentMenuUrl = (menus: IMenuInfo[], url: string): string => {
+export const getParentMenuUrl = (permissions: IPermissionInfo[], url: string): string => {
   let parentUrl = '';
-  menus.forEach((item) => {
+  permissions.forEach((item) => {
     if (item.children) {
       const childUrl = getParentMenuUrl(item.children, url);
       if (childUrl) {
-        parentUrl = item.menuUrl;
+        parentUrl = item.permissionUrl;
       }
     } else {
-      if (item.menuUrl === url) {
-        parentUrl = item.menuUrl;
+      if (item.permissionUrl === url) {
+        parentUrl = item.permissionUrl;
       }
     }
   });
   return parentUrl;
 };
 
-export const searchRouter = (url: string, menus: IMenuInfo[]): IMenuInfo | null => {
+export const searchRouter = (url: string, menus: IPermissionInfo[]): IPermissionInfo | null => {
   if (!Array.isArray(menus)) return null;
   for (const item of menus) {
-    if (item.menuUrl === url) return item;
+    if (item.permissionUrl === url) return item;
     if (item.children?.length) {
       const result = searchRouter(url, item.children);
       if (result) return result;

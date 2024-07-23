@@ -25,20 +25,20 @@ const roleDrawerConfig: IVrFormProps = {
       ]
     },
     {
-      key: 'roleMenus',
-      label: '菜单权限',
+      key: 'rolePermissions',
+      label: '权限',
       type: 'tree',
-      placeholder: '请选择菜单权限',
+      placeholder: '请选择权限',
       treeData: [],
       treeFieldNames: {
-        title: 'menuName',
+        title: 'permissionName',
         key: 'id',
         children: 'children'
       },
       rules: [
         {
           required: true,
-          message: '请选择菜单权限'
+          message: '请选择权限'
         }
       ]
     },

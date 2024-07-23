@@ -1,4 +1,4 @@
-export interface IMenuData {
+export interface IPermissionData {
   id: number;
-  menuName: string;
+  permissionName: string;
 }

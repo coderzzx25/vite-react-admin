@@ -7,39 +7,39 @@ const userDrawerConfig: IVrFormProps = {
   },
   isShowBtns: false,
   initialValues: {
+    userAccount: '',
     userName: '',
-    userNick: '',
-    userHead: '',
+    userAvatar: '',
     userRole: 2,
     status: 1
   },
   formItems: [
     {
+      key: 'userAccount',
+      label: '账户',
+      type: 'input',
+      placeholder: '请输入账户',
+      rules: [
+        {
+          required: true,
+          message: '请输入账户'
+        }
+      ]
+    },
+    {
       key: 'userName',
-      label: '用户名',
+      label: '姓名',
       type: 'input',
-      placeholder: '请输入用户名',
+      placeholder: '请输入姓名',
       rules: [
         {
           required: true,
-          message: '请输入用户名'
+          message: '请输入姓名'
         }
       ]
     },
     {
-      key: 'userNick',
-      label: '昵称',
-      type: 'input',
-      placeholder: '请输入昵称',
-      rules: [
-        {
-          required: true,
-          message: '请输入昵称'
-        }
-      ]
-    },
-    {
-      key: 'userHead',
+      key: 'userAvatar',
       label: '头像',
       type: 'input',
       placeholder: '请上传头像',

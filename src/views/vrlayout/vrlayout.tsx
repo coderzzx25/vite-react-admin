@@ -8,11 +8,11 @@ import VrLayoutWrapper from './style';
 import logo from '@/assets/images/vite.svg';
 import VrMenu from '@/components/VrMenu/VrMenu';
 import VrHeader from '@/components/VrHeader/VrHeader';
-import { getParentMenuUrl, mapMenuToMenuItem, mapMenuToUrl, searchRouter } from '@/utils/map-router';
+import { getParentMenuUrl, mapPermissionToMenuItem, mapPermissionToUrl, searchRouter } from '@/utils/map-router';
 import { localCache } from '@/utils/cache';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { setIsCollapsedReducer, setIsDarkReducer, setPrimaryColorReducer } from '@/store/modules/main';
-import { getRoleMenuListAsyncThunk } from '@/store/modules/systems';
+import { getRolePermissionListAsyncThunk } from '@/store/modules/systems';
 
 interface IProps {
   children?: ReactNode;
@@ -26,7 +26,7 @@ const Vrlayout: FC<IProps> = () => {
   const { pathname } = useLocation();
   const dispatch = useAppDispatch();
   const { userInfo, accessToken } = useAppSelector((state) => state.auths, useAppShallowEqual);
-  const { userMenu } = useAppSelector((state) => state.systems, useAppShallowEqual);
+  const { userPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
   const { isCollapsed, isDark, primaryColor } = useAppSelector((state) => state.main, useAppShallowEqual);
   const [loading, setLoading] = useState(true);
   const [tabItems, setTabItems] = useState([
@@ -44,28 +44,28 @@ const Vrlayout: FC<IProps> = () => {
     }
   }, [userInfo, pathname, navigate]);
 
-  // 获取用户菜单
+  // 获取用户权限
   useEffect(() => {
     if (userInfo) {
-      dispatch(getRoleMenuListAsyncThunk(userInfo.roleId)).then(() => {
+      dispatch(getRolePermissionListAsyncThunk(userInfo.roleId)).then(() => {
         setLoading(false);
       });
     }
   }, [userInfo, dispatch]);
 
-  const menuItems = useMemo(() => mapMenuToMenuItem(userMenu), [userMenu]);
-  const menuUrls = useMemo(() => mapMenuToUrl(userMenu), [userMenu]);
-  const parentUrl = useMemo(() => getParentMenuUrl(userMenu, pathname), [userMenu, pathname]);
+  const permissionItems = useMemo(() => mapPermissionToMenuItem(userPermission), [userPermission]);
+  const permissionUrls = useMemo(() => mapPermissionToUrl(userPermission), [userPermission]);
+  const parentUrl = useMemo(() => getParentMenuUrl(userPermission, pathname), [userPermission, pathname]);
 
   // 判断是否有权限访问
   useEffect(() => {
     if (!loading) {
       const staticPath = ['/', '/welcome', '/notfound'];
-      if (!menuUrls.includes(pathname) && !staticPath.includes(pathname)) {
+      if (!permissionUrls.includes(pathname) && !staticPath.includes(pathname)) {
         navigate('/notfound');
       }
     }
-  }, [pathname, menuUrls, loading, navigate]);
+  }, [pathname, permissionUrls, loading, navigate]);
 
   useEffect(() => {
     if (tabItems.length === 1) {
@@ -73,23 +73,23 @@ const Vrlayout: FC<IProps> = () => {
     }
   }, [tabItems, navigate]);
 
-  // 处理菜单点击
+  // 处理权限点击
   const onClickMenu = useCallback(
     (key: string) => {
       navigate(key);
-      const tabItemInfo = searchRouter(key, userMenu);
+      const tabItemInfo = searchRouter(key, userPermission);
       if (!tabItemInfo) return;
       if (tabItems.some((item) => item.key === key)) return;
       setTabItems([
         ...tabItems,
         {
-          label: tabItemInfo.menuName,
+          label: tabItemInfo.permissionName,
           key,
           closable: true
         }
       ]);
     },
-    [navigate, userMenu]
+    [navigate, userPermission]
   );
 
   const onClickEditTabItem = useCallback(
@@ -139,7 +139,7 @@ const Vrlayout: FC<IProps> = () => {
     navigate('/login');
   }, [navigate]);
 
-  // 下拉菜单
+  // 下拉权限
   const dropdownMenuItems = [
     {
       label: '退出登录',
@@ -155,7 +155,7 @@ const Vrlayout: FC<IProps> = () => {
           <img className="logo" src={logo} alt="logo" />
           <Title className={classNames({ collapsed: isCollapsed })}>Vite React Admin</Title>
         </Typography>
-        <VrMenu menuItems={menuItems} handleMenuClick={onClickMenu} selectedKeys={pathname} openKey={parentUrl} />
+        <VrMenu menuItems={permissionItems} handleMenuClick={onClickMenu} selectedKeys={pathname} openKey={parentUrl} />
       </Sider>
       <Layout>
         <Header>

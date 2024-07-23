@@ -1,30 +1,36 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { getAllMenuListService, getRoleMenuListService } from '@/service/modules/systems/menu';
+import { getAllPermissionListService, getRolePermissionListService } from '@/service/modules/systems/permission';
 import { getAllRoleListService } from '@/service/modules/systems/role';
-import { IMenuInfo } from '@/types/systems/menu';
+import { IPermissionInfo } from '@/types/systems/permission';
 import { IRoleInfo } from '@/types/systems/role';
 
 interface ISystemsState {
-  userMenu: IMenuInfo[];
-  allMenu: IMenuInfo[];
+  userPermission: IPermissionInfo[];
+  allPermission: IPermissionInfo[];
   allRole: IRoleInfo[];
 }
 
 const systemsSlice = createSlice({
   name: 'systems',
   initialState: {
-    userMenu: [],
-    allMenu: [],
+    userPermission: [],
+    allPermission: [],
     allRole: []
   } as ISystemsState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getRoleMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenuInfo[]>) => {
-      state.userMenu = payload;
-    });
-    builder.addCase(getAllMenuListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IMenuInfo[]>) => {
-      state.allMenu = payload;
-    });
+    builder.addCase(
+      getRolePermissionListAsyncThunk.fulfilled,
+      (state, { payload }: PayloadAction<IPermissionInfo[]>) => {
+        state.userPermission = payload;
+      }
+    );
+    builder.addCase(
+      getAllPermissionListAsyncThunk.fulfilled,
+      (state, { payload }: PayloadAction<IPermissionInfo[]>) => {
+        state.allPermission = payload;
+      }
+    );
     builder.addCase(getAllRoleListAsyncThunk.fulfilled, (state, { payload }: PayloadAction<IRoleInfo[]>) => {
       state.allRole = payload;
     });
@@ -34,24 +40,24 @@ const systemsSlice = createSlice({
 export default systemsSlice.reducer;
 
 /**
- * 获取角色菜单
+ * 获取角色权限
  * @param {string} roleId - 角色ID
- * @returns {Promise<IMenuInfo[]>}
+ * @returns {Promise<IPermissionInfo[]>}
  */
-export const getRoleMenuListAsyncThunk = createAsyncThunk(
-  'systems/getRoleMenuListAsyncThunk',
+export const getRolePermissionListAsyncThunk = createAsyncThunk(
+  'systems/getRolePermissionListAsyncThunk',
   async (roleId: number) => {
-    const result = await getRoleMenuListService(roleId);
+    const result = await getRolePermissionListService(roleId);
     return result;
   }
 );
 
 /**
- * 获取所有菜单
- * @returns {Promise<IMenuInfo[]>}
+ * 获取所有权限
+ * @returns {Promise<IPermissionInfo[]>}
  */
-export const getAllMenuListAsyncThunk = createAsyncThunk('systems/getAllMenuListAsyncThunk', async () => {
-  const result = await getAllMenuListService();
+export const getAllPermissionListAsyncThunk = createAsyncThunk('systems/getAllPermissionListAsyncThunk', async () => {
+  const result = await getAllPermissionListService();
   return result;
 });
 

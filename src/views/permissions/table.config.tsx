@@ -2,7 +2,7 @@ import { Tag } from 'antd';
 import { mapIcon } from '@/utils/map-router';
 import { ITableConfig } from '@/components/VrTable/type';
 
-const menuTableConfig: ITableConfig = {
+const permissionTableConfig: ITableConfig = {
   bordered: true,
   rowKey: 'id',
   tableColumns: [
@@ -13,26 +13,26 @@ const menuTableConfig: ITableConfig = {
       align: 'center'
     },
     {
-      title: '菜单名',
-      dataIndex: 'menuName',
-      key: 'menuName',
+      title: '权限名',
+      dataIndex: 'permissionName',
+      key: 'permissionName',
       align: 'center'
     },
     {
-      title: '菜单路径',
-      dataIndex: 'menuUrl',
-      key: 'menuUrl',
+      title: '权限路径',
+      dataIndex: 'permissionUrl',
+      key: 'permissionUrl',
       align: 'center'
     },
     {
-      title: '菜单图标',
-      dataIndex: 'menuIcon',
-      key: 'menuIcon',
+      title: '权限图标',
+      dataIndex: 'permissionIcon',
+      key: 'permissionIcon',
       align: 'center',
       render: (icon: string) => mapIcon(icon)
     },
     {
-      title: '菜单状态',
+      title: '权限状态',
       dataIndex: 'status',
       key: 'status',
       align: 'center',
@@ -53,4 +53,4 @@ const menuTableConfig: ITableConfig = {
   ]
 };
 
-export default menuTableConfig;
+export default permissionTableConfig;

@@ -14,20 +14,20 @@ const userTableConfig: ITableConfig = {
     },
     {
       title: '账户',
+      dataIndex: 'userAccount',
+      key: 'userAccount',
+      align: 'center'
+    },
+    {
+      title: '姓名',
       dataIndex: 'userName',
       key: 'userName',
       align: 'center'
     },
     {
-      title: '昵称',
-      dataIndex: 'userNick',
-      key: 'userNick',
-      align: 'center'
-    },
-    {
       title: '头像',
-      dataIndex: 'userHead',
-      key: 'userHead',
+      dataIndex: 'userAvatar',
+      key: 'userAvatar',
       align: 'center',
       render: (head: string) => <Avatar src={head} />
     },
