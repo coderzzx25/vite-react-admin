@@ -104,8 +104,8 @@ const permissions: FC<IProps> = () => {
   // 抽屉表单提交
   const onClickDrawerFormSubmit = useCallback(
     async (values: any) => {
-      const newMenuPid = values.menuPid[values.menuPid.length - 1];
-      values.menuPid = newMenuPid;
+      const newPermissionPid = values.permissionPid[values.permissionPid.length - 1];
+      values.permissionPid = newPermissionPid;
       if (updateInfo) {
         await updatePermissionService({ ...values, id: updateInfo.id });
       } else {

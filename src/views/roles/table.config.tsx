@@ -1,4 +1,4 @@
-import { Tag } from 'antd';
+import { Space, Tag } from 'antd';
 import { ITableConfig } from '@/components/VrTable/type';
 
 const roleTableConfig: ITableConfig = {
@@ -19,9 +19,19 @@ const roleTableConfig: ITableConfig = {
     },
     {
       title: '角色权限',
-      dataIndex: 'rolePermissions',
-      key: 'roleMenus',
-      align: 'center'
+      dataIndex: 'permissionInfo',
+      key: 'permissionInfo',
+      align: 'center',
+      width: 255,
+      render: (permissionInfo: { id: number; permissionName: string }[]) => (
+        <Space size={[2, 2]} wrap align="baseline">
+          {permissionInfo.map((item) => (
+            <Tag key={item.id} color="blue">
+              {item.permissionName}
+            </Tag>
+          ))}
+        </Space>
+      )
     },
     {
       title: '角色状态',

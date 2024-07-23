@@ -1,6 +1,7 @@
 import { Tag } from 'antd';
 import { mapIcon } from '@/utils/map-router';
 import { ITableConfig } from '@/components/VrTable/type';
+import { PERMISSION_TYPE } from '@/global/config/type.config';
 
 const permissionTableConfig: ITableConfig = {
   bordered: true,
@@ -30,6 +31,13 @@ const permissionTableConfig: ITableConfig = {
       key: 'permissionIcon',
       align: 'center',
       render: (icon: string) => mapIcon(icon)
+    },
+    {
+      title: '权限类型',
+      dataIndex: 'permissionType',
+      key: 'permissionType',
+      align: 'center',
+      render: (type: number) => PERMISSION_TYPE.find((item) => item.value === type)?.label
     },
     {
       title: '权限状态',

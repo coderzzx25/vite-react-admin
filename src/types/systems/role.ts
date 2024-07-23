@@ -15,6 +15,10 @@ export interface IRoleInfo {
   id: number;
   roleName: string;
   rolePermission: number[];
+  permissionInfo: {
+    id: number;
+    permissionName: string;
+  }[];
   status: number;
   createTime: string;
   updateTime: string;
