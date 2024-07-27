@@ -75,8 +75,8 @@ const VrHeader: FC<IProps> = ({
         </div>
         <Dropdown menu={{ items: dropdownMenuItems }} placement="bottom" arrow>
           <Flex align="center" justify="space-between" gap={10}>
-            <Avatar src={userInfo?.userHead} />
-            <div>{userInfo?.userNickName}</div>
+            <Avatar src={userInfo?.userAvatar} />
+            <div>{userInfo?.userName}</div>
           </Flex>
         </Dropdown>
       </div>

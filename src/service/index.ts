@@ -40,12 +40,12 @@ const VrRequest = new Request({
       const axiosError = error as AxiosError;
 
       if (axiosError.response?.status === 401) {
-        message.warning('正在刷新token，请稍后重试');
+        message.warning('正在刷新token,请稍后重试');
         try {
           await store.dispatch(refreshTokenAsyncThunk());
-          message.success('刷新token成功，请重新操作');
+          message.success('刷新token成功,请重新操作');
         } catch {
-          message.error('刷新token失败，请重新登录');
+          message.error('刷新token失败,请重新登录');
         }
       } else {
         const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';

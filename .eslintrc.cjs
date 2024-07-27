@@ -28,6 +28,8 @@ module.exports = {
   plugins: ['@typescript-eslint', 'react'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
-    'react/react-in-jsx-scope': 'off'
+    'react/react-in-jsx-scope': 'off',
+    'react/display-name': 'off',
+    'react/no-children-prop': 'off'
   }
 };
