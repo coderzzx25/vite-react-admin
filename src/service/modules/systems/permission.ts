@@ -55,10 +55,10 @@ export const getAllPermissionListService = () => {
 
 /**
  * @description 获取角色权限列表
- * @param {Number} roleId 角色ID
+ * @param {string} roleId 角色ID
  * @returns {Promise<IPermissionInfo>} 角色权限列表
  */
-export const getRolePermissionListService = (roleId: number) => {
+export const getRolePermissionListService = (roleId: string) => {
   return VrRequest.get<IPermissionInfo[]>({
     url: `/permissions/user-permissions/${roleId}`
   });

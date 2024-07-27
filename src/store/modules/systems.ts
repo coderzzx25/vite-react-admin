@@ -46,7 +46,7 @@ export default systemsSlice.reducer;
  */
 export const getRolePermissionListAsyncThunk = createAsyncThunk(
   'systems/getRolePermissionListAsyncThunk',
-  async (roleId: number) => {
+  async (roleId: string) => {
     const result = await getRolePermissionListService(roleId);
     return result;
   }

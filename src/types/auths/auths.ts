@@ -13,7 +13,7 @@ export interface IUserInfo {
   userAccount: string;
   userName: string;
   userAvatar: string;
-  roleId: number;
+  roleId: string;
 }
 
 /**
