@@ -12,7 +12,8 @@ import {
   createPermissionService,
   updatePermissionService
 } from '@/service/modules/systems/permission';
-import { useAppSelector, useAppShallowEqual } from '@/store';
+import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
+import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 
 import VrForm from '@/components/VrForm/VrForm';
 import VrTable from '@/components/VrTable/VrTable';
@@ -30,7 +31,8 @@ interface IProps {
 const { Column } = Table;
 
 const permissions: FC<IProps> = () => {
-  const { userPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
+  const dispatch = useAppDispatch();
+  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
   // 查询条件
   const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({
     page: 1,
@@ -79,6 +81,10 @@ const permissions: FC<IProps> = () => {
     fetchTableData();
   }, [fetchTableData]);
 
+  useEffect(() => {
+    dispatch(getAllPermissionListAsyncThunk());
+  }, [dispatch]);
+
   // 点击添加
   const onClickCreate = useCallback(() => {
     setUpdateInfo(null);
@@ -94,10 +100,7 @@ const permissions: FC<IProps> = () => {
   // 编辑数据回显
   useEffect(() => {
     if (updateInfo && drawerFormRef.current) {
-      drawerFormRef.current.setFieldsValue({
-        ...updateInfo,
-        permissionPid: [updateInfo.permissionPid]
-      });
+      drawerFormRef.current.setFieldsValue(updateInfo);
     }
   }, [updateInfo]);
 
@@ -125,7 +128,7 @@ const permissions: FC<IProps> = () => {
   }, []);
 
   // 用户权限数据
-  const memoizedUserMenu = useMemo(() => [noMenuPid, ...userPermission], [userPermission]);
+  const memoizedUserMenu = useMemo(() => [noMenuPid, ...allPermission], [allPermission]);
 
   // 用户权限数据变化时更新formItems
   useEffect(() => {
