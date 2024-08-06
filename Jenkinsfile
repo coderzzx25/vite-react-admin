@@ -5,12 +5,13 @@ pipeline {
         DOCKER_IMAGE_NAME = 'vite-react-admin'
         DOCKER_REGISTRY = 'localhost:5000'
         DOCKER_IMAGE_TAG = 'latest'
+        GIT_URL = 'https://github.com/coderzzx25/vite-react-admin.git'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/coderzzx25/vite-react-admin.git', branch: 'master'
+                git url: GIT_URL, branch: 'master'
             }
         }
 
