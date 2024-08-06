@@ -22,10 +22,11 @@ FROM nginx:alpine
 # 复制构建好的静态文件到 nginx 的默认目录
 COPY --from=build /app/build /usr/share/nginx/html
 
-# 暴露端口 8080
-EXPOSE 8080
+# 暴露端口，通过环境变量配置
+ARG PORT=8080
+EXPOSE ${PORT}
 
-# 修改 nginx 配置文件，监听端口 8080
+# 修改 nginx 配置文件，监听端口
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # 启动 nginx
