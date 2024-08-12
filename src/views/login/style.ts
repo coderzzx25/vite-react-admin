@@ -17,6 +17,13 @@ const LoginWrapper = styled(Layout)`
   .form-content {
     width: 300px;
   }
+
+  .other-login {
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 `;
 
 export default LoginWrapper;

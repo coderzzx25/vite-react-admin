@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import type { FC, ReactNode } from 'react';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
 import zhCN from 'antd/lib/locale/zh_CN';
 
@@ -38,9 +38,9 @@ const App: FC<IProps> = () => {
         }
       }}
     >
-      <HashRouter>
+      <BrowserRouter>
         <Routers />
-      </HashRouter>
+      </BrowserRouter>
     </ConfigProvider>
   );
 };

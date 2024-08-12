@@ -1,15 +1,16 @@
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import type { FC, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Layout, Input, Checkbox, Flex, Typography } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { Button, Form, Layout, Input, Checkbox, Flex, Typography, Divider } from 'antd';
+import { LockOutlined, UserOutlined, GithubOutlined } from '@ant-design/icons';
 
 import LoginWrapper from './style';
 import loginLeft from '@/assets/images/login-left.svg';
 import { localCache } from '@/utils/cache';
 import { IAccountLoginBody } from '@/types/auths/auths';
-import { userLoginService } from '@/service/modules/auths/auths';
+import { userLoginService, githubLoginService } from '@/service/modules/auths/auths';
 import { useAppDispatch } from '@/store';
 import { setLoginInfoReducer } from '@/store/modules/auths';
 
@@ -41,6 +42,7 @@ const loginRules = {
 
 const login: FC<IProps> = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const onLoginFinish = async (values: IFormValues) => {
     const { userAccount, userPassword, remember } = values;
@@ -56,6 +58,30 @@ const login: FC<IProps> = () => {
     dispatch(setLoginInfoReducer(loginResult));
     navigate('/');
   };
+
+  const onClickGithubLogin = () => {
+    const clientId = 'Ov23lih4LOhLPcEeH6Mf';
+    const redirectUri = 'http://localhost:5173/login';
+    const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=user`;
+
+    window.location.href = githubAuthUrl;
+  };
+
+  useEffect(() => {
+    const getToken = async () => {
+      const searchParams = new URLSearchParams(location.search);
+      const code = searchParams.get('code');
+      if (code) {
+        // 请求接口
+        const result = await githubLoginService(code);
+        if (!result) return;
+        dispatch(setLoginInfoReducer(result));
+        navigate('/');
+      }
+    };
+
+    getToken();
+  }, [navigate]);
   return (
     <LoginWrapper>
       <Content className="content">
@@ -86,9 +112,17 @@ const login: FC<IProps> = () => {
             </Flex>
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" block>
               登 录
             </Button>
+          </Form.Item>
+          <Form.Item>
+            <Divider>其他登录方式</Divider>
+          </Form.Item>
+          <Form.Item>
+            <div className="other-login">
+              <GithubOutlined onClick={onClickGithubLogin} />
+            </div>
           </Form.Item>
         </Form>
       </Content>
