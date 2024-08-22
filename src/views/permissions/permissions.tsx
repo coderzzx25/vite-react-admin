@@ -1,202 +1,305 @@
-import { memo, useCallback, useState, useEffect, useRef, useMemo } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Button, Space, Drawer, Table } from 'antd';
-import { FormInstance } from 'antd/lib';
-import { PlusOutlined, EditOutlined } from '@ant-design/icons';
+import { Col, Form, Row, Table, Input, Select, Space, Button, Drawer, Cascader } from 'antd';
+import { SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons';
 
-import MenusWrapper from './style';
-
+import tableColumn from './table.config';
 import {
-  getPermissionListService,
   createPermissionService,
+  getPermissionListService,
   updatePermissionService
 } from '@/service/modules/systems/permission';
+import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody } from '@/types/systems/permission';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
-
-import VrForm from '@/components/VrForm/VrForm';
-import VrTable from '@/components/VrTable/VrTable';
-import permissionTableConfig from './table.config';
-import permissionDrawerConfig from './drawer.config';
-import permissionFormConfig from './form.config';
-
-import { IPermissionInfo, IPermissionListParams } from '@/types/systems/permission';
-import { noMenuPid } from '@/global/data/data.config';
 
 interface IProps {
   children?: ReactNode;
 }
 
+interface ICreateForm {
+  permissionName: string;
+  permissionPid: number[];
+  permissionUrl: string;
+  permissionIcon: string;
+  permissionType: number;
+  status: number;
+}
+
 const { Column } = Table;
 
+const noMenuPid = {
+  permissionName: '顶级菜单',
+  id: 0
+};
+
 const permissions: FC<IProps> = () => {
-  const dispatch = useAppDispatch();
-  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
-  // 查询条件
+  // 表格loading
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+  // 表格数据
+  const [tableData, setTableData] = useState<IPermissionInfo[]>([]);
+  // 表格总数
+  const [total, setTotal] = useState<number>(0);
+  // 查询参数
   const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({
     page: 1,
     size: 10
   });
-  // 表格loading
-  const [tableLoading, setTableLoading] = useState<boolean>(false);
-  // 表格数据
-  const [tableList, setTableList] = useState<IPermissionInfo[]>([]);
-  // 表格总数
-  const [total, setTotal] = useState<number>(0);
-  // 抽屉显示隐藏
-  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
-  // 编辑的数据
-  const [updateInfo, setUpdateInfo] = useState<IPermissionInfo | null>(null);
-  // 抽屉表单实例
-  const drawerFormRef = useRef<FormInstance>(null);
 
-  // 提交查询条件
-  const onSubmitSearchInfo = useCallback((values: Record<string, any>) => {
-    setSearchInfo((prev) => ({
-      ...prev,
-      ...values
-    }));
-  }, []);
-
-  // 重置查询条件
-  const onResetSearchInfo = useCallback((values: Record<string, any>) => {
-    setSearchInfo({
-      page: 1,
-      size: 10,
-      ...values
-    });
-  }, []);
-
-  // 请求表格数据
-  const fetchTableData = useCallback(async () => {
+  const onClickSearch = useCallback(
+    (values: IPermissionListParams) => {
+      setSearchInfo({ ...searchInfo, ...values });
+    },
+    [searchInfo]
+  );
+  // 获取权限列表
+  const fetchPermissionList = useCallback(async () => {
     setTableLoading(true);
-    const res = await getPermissionListService(searchInfo);
-    setTableList(res.data);
-    setTotal(res.total);
+    const result = await getPermissionListService(searchInfo);
+    setTableData(result.data);
+    setTotal(result.total);
     setTableLoading(false);
   }, [searchInfo]);
 
+  // 初始化获取权限列表
   useEffect(() => {
-    fetchTableData();
-  }, [fetchTableData]);
+    fetchPermissionList();
+  }, [fetchPermissionList]);
 
+  const dispatch = useAppDispatch();
+  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
+
+  // 请求菜单数据
   useEffect(() => {
     dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
 
-  // 点击添加
-  const onClickCreate = useCallback(() => {
-    setUpdateInfo(null);
-    setDrawerVisible(true);
-  }, []);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
+  const [form] = Form.useForm();
 
-  // 点击编辑
-  const onClickUpdate = useCallback((updateInfo: IPermissionInfo) => {
-    setUpdateInfo(updateInfo);
-    setDrawerVisible(true);
-  }, []);
+  const onCloseDrawer = useCallback(() => {
+    setDrawerVisible(false);
+    setEditInfo(null);
+    form.resetFields();
+  }, [form]);
 
-  // 编辑数据回显
-  useEffect(() => {
-    if (updateInfo && drawerFormRef.current) {
-      drawerFormRef.current.setFieldsValue(updateInfo);
-    }
-  }, [updateInfo]);
-
-  // 抽屉表单提交
-  const onClickDrawerFormSubmit = useCallback(
-    async (values: any) => {
+  // 提交数据
+  const onClickCreate = useCallback(
+    async (values: ICreateForm) => {
       const newPermissionPid = values.permissionPid[values.permissionPid.length - 1];
-      values.permissionPid = newPermissionPid;
-      if (updateInfo) {
-        await updatePermissionService({ ...values, id: updateInfo.id });
+      const newValues: ICreatePermissionBody = {
+        ...values,
+        permissionPid: newPermissionPid
+      };
+      if (editInfo) {
+        await updatePermissionService({ ...newValues, id: editInfo.id });
       } else {
-        await createPermissionService(values);
+        await createPermissionService(newValues);
       }
       onCloseDrawer();
-      fetchTableData();
+      fetchPermissionList();
     },
-    [updateInfo]
+    [editInfo, fetchPermissionList, onCloseDrawer]
   );
 
-  // 关闭抽屉
-  const onCloseDrawer = useCallback(() => {
-    setUpdateInfo(null);
-    drawerFormRef.current?.resetFields();
-    setDrawerVisible(false);
+  const onClickEdit = useCallback((info: IPermissionInfo) => {
+    setEditInfo(info);
+    setDrawerVisible(true);
   }, []);
 
-  // 用户权限数据
-  const memoizedUserMenu = useMemo(() => [noMenuPid, ...allPermission], [allPermission]);
-
-  // 用户权限数据变化时更新formItems
   useEffect(() => {
-    permissionDrawerConfig.formItems = permissionDrawerConfig.formItems.map((item) => {
-      if (item.key === 'permissionPid') {
-        return { ...item, fieldNamesOptions: memoizedUserMenu };
-      }
-      return item;
-    });
-  }, [memoizedUserMenu]);
+    if (editInfo && form) {
+      form.setFieldsValue(editInfo);
+    }
+  }, [editInfo, form]);
 
   return (
-    <MenusWrapper>
-      <VrForm
-        {...permissionFormConfig}
-        handleSubmit={onSubmitSearchInfo}
-        handleReset={onResetSearchInfo}
-        otherBtns={
-          <Button onClick={onClickCreate} icon={<PlusOutlined />}>
-            添加权限
-          </Button>
-        }
-      />
-      <VrTable
-        {...permissionTableConfig}
-        data={tableList}
-        total={total}
-        current={searchInfo.page}
-        pageSize={searchInfo.size}
+    <div>
+      <Form autoComplete="off" onFinish={onClickSearch}>
+        <Row gutter={24}>
+          <Col span={6}>
+            <Form.Item<IPermissionListParams> label="权限名" name="permissionName">
+              <Input placeholder="请输入权限名" />
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item<IPermissionListParams> label="权限类型" name="permissionType">
+              <Select placeholder="请选择权限类型" allowClear>
+                <Select.Option value={1}>菜单</Select.Option>
+                <Select.Option value={2}>按钮</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item<IPermissionListParams> label="权限状态" name="status">
+              <Select placeholder="请选择权限状态" allowClear>
+                <Select.Option value={1}>启用</Select.Option>
+                <Select.Option value={0}>禁用</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Space>
+              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
+                查询
+              </Button>
+              <Button icon={<ReloadOutlined />}>重置</Button>
+              <Button type="primary" onClick={() => setDrawerVisible(true)}>
+                创建
+              </Button>
+            </Space>
+          </Col>
+        </Row>
+      </Form>
+      <Table
         loading={tableLoading}
-        handlePageChange={(page, size) =>
-          setSearchInfo({
-            ...searchInfo,
-            page,
-            size
-          })
-        }
-        actionColumn={
-          <Column
-            title="操作"
-            key="action"
-            align="center"
-            render={(_: string, record: IPermissionInfo) => (
-              <Space size="middle">
-                <Button type="primary" icon={<EditOutlined />} onClick={() => onClickUpdate(record)}>
-                  编辑
-                </Button>
-              </Space>
-            )}
-          />
-        }
-      />
-      <Drawer title={updateInfo ? '编辑权限' : '添加权限'} open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
-        <VrForm
-          ref={drawerFormRef}
-          {...permissionDrawerConfig}
-          handleSubmit={onClickDrawerFormSubmit}
-          otherBtns={
+        dataSource={tableData}
+        rowKey={'id'}
+        pagination={{
+          showSizeChanger: true,
+          showQuickJumper: true,
+          current: searchInfo.page,
+          pageSize: searchInfo.size,
+          total,
+          onChange: (page: number, size: number) => setSearchInfo({ ...searchInfo, page, size }),
+          showTotal: () => `共 ${total} 条`
+        }}
+      >
+        {tableColumn && tableColumn.map((column) => <Column {...column} children={undefined} key={column.key} />)}
+        <Column
+          title="操作"
+          key="action"
+          align="center"
+          render={(_: string, record: IPermissionInfo) => (
+            <Space size="middle">
+              <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEdit(record)}>
+                编辑
+              </Button>
+            </Space>
+          )}
+        />
+      </Table>
+      <Drawer title="创建" open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
+        <Form
+          initialValues={{
+            permissionName: '',
+            permissionPid: [0],
+            permissionType: 1,
+            permissionUrl: '',
+            permissionIcon: '',
+            status: 1
+          }}
+          onFinish={onClickCreate}
+          form={form}
+        >
+          <Form.Item<ICreateForm>
+            label="权限名"
+            name="permissionName"
+            rules={[
+              {
+                required: true,
+                message: '请输入权限名'
+              }
+            ]}
+          >
+            <Input placeholder="请输入权限名" />
+          </Form.Item>
+          <Form.Item<ICreateForm>
+            label="父级"
+            name="permissionPid"
+            rules={[
+              {
+                required: true,
+                message: '请选择父级'
+              }
+            ]}
+          >
+            <Cascader
+              options={[noMenuPid, ...allPermission]}
+              changeOnSelect={true}
+              fieldNames={{
+                label: 'permissionName',
+                value: 'id'
+              }}
+              placeholder="请选择父级"
+            />
+          </Form.Item>
+          <Form.Item<ICreateForm>
+            label="权限类型"
+            name="permissionType"
+            rules={[
+              {
+                required: true,
+                message: '请选择权限类型'
+              }
+            ]}
+          >
+            <Select placeholder="请选择权限类型" allowClear>
+              <Select.Option value={1}>菜单</Select.Option>
+              <Select.Option value={2}>按钮</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item<ICreateForm>
+            label="路由地址/按钮值"
+            name="permissionUrl"
+            rules={[
+              {
+                required: true,
+                message: '请输入路由地址/按钮值'
+              }
+            ]}
+          >
+            <Input placeholder="请输入路由地址/按钮值" />
+          </Form.Item>
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.permissionType !== currentValues.permissionType}
+          >
+            {({ getFieldValue }) => {
+              return getFieldValue('permissionType') === 1 ? (
+                <Form.Item<ICreateForm>
+                  label="路由Icon"
+                  name="permissionIcon"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入图标'
+                    }
+                  ]}
+                >
+                  <Input placeholder="请输入图标" />
+                </Form.Item>
+              ) : null;
+            }}
+          </Form.Item>
+          <Form.Item<ICreateForm>
+            label="权限状态"
+            name="status"
+            rules={[
+              {
+                required: true,
+                message: '请选择权限状态'
+              }
+            ]}
+          >
+            <Select placeholder="请选择权限状态" allowClear>
+              <Select.Option value={1}>启用</Select.Option>
+              <Select.Option value={0}>禁用</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit">
                 提交
               </Button>
               <Button onClick={onCloseDrawer}>取消</Button>
             </Space>
-          }
-        />
+          </Form.Item>
+        </Form>
       </Drawer>
-    </MenusWrapper>
+    </div>
   );
 };
 

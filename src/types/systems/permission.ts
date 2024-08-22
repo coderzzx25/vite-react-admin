@@ -5,6 +5,7 @@ export interface IPermissionListParams {
   page: number;
   size: number;
   permissionName?: string;
+  permissionType?: number;
   status?: number;
 }
 

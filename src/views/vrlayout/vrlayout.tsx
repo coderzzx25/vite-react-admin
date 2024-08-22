@@ -42,7 +42,7 @@ const Vrlayout: FC<IProps> = () => {
     if (!userInfo && !accessToken && pathname !== '/login') {
       navigate('/login');
     }
-  }, [userInfo, pathname, navigate]);
+  }, [userInfo, accessToken, pathname, navigate]);
 
   // 获取用户权限
   useEffect(() => {
@@ -67,11 +67,20 @@ const Vrlayout: FC<IProps> = () => {
     }
   }, [pathname, permissionUrls, loading, navigate]);
 
+  // 初始化时更新 tabItems 以反映当前路径
   useEffect(() => {
-    if (tabItems.length === 1) {
-      navigate('/welcome');
+    const tabItemInfo = searchRouter(pathname, userPermission);
+    if (tabItemInfo && !tabItems.some((item) => item.key === pathname)) {
+      setTabItems([
+        ...tabItems,
+        {
+          label: tabItemInfo.permissionName,
+          key: pathname,
+          closable: true
+        }
+      ]);
     }
-  }, [tabItems, navigate]);
+  }, [pathname, userPermission, tabItems]);
 
   // 处理权限点击
   const onClickMenu = useCallback(
@@ -89,7 +98,7 @@ const Vrlayout: FC<IProps> = () => {
         }
       ]);
     },
-    [navigate, userPermission]
+    [navigate, userPermission, tabItems]
   );
 
   const onClickEditTabItem = useCallback(
@@ -100,8 +109,10 @@ const Vrlayout: FC<IProps> = () => {
       newTabItems.splice(index, 1);
       setTabItems(newTabItems);
       // 切换到上一个标签页
-      const prevTabItem = newTabItems[index - 1];
-      navigate(prevTabItem.key);
+      const prevTabItem = newTabItems[index - 1] || newTabItems[0];
+      if (prevTabItem) {
+        navigate(prevTabItem.key);
+      }
     },
     [tabItems, navigate]
   );
