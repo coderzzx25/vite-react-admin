@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { memo, useState, useEffect, useCallback, useMemo } from 'react';
 import type { FC, ReactNode } from 'react';
 
 import { Table, Space, Button } from 'antd';
@@ -16,9 +16,10 @@ import BaseForm from '@/components/BaseForm/BaseForm';
 import drawerConfig from './drawer.config';
 import searchConfig from './search.config';
 import BaseDrawer from '@/components/BaseDrawer/BaseDrawer';
-import { IBaseDrawerRef } from '@/components/BaseDrawer/BaseDrawer.d';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
+
+import useDrawer from '@/components/BaseDrawer/useDrawer';
 
 interface IProps {
   children?: ReactNode;
@@ -43,9 +44,7 @@ const permissions: FC<IProps> = () => {
   const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({ page: 1, size: 10 });
   const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
   const [newDrawerConfig, setNewDrawerConfig] = useState(drawerConfig);
-
-  // Ref
-  const drawerRef = useRef<IBaseDrawerRef | null>(null);
+  const [drawerRef, setDrawerOpen, setDrawerClose] = useDrawer();
 
   // 全局状态
   const dispatch = useAppDispatch();
@@ -70,12 +69,12 @@ const permissions: FC<IProps> = () => {
 
   const onClickCreate = useCallback(() => {
     setEditInfo(null);
-    drawerRef.current?.open();
+    setDrawerOpen();
   }, []);
 
   const onClickEdit = useCallback((info: IPermissionInfo) => {
     setEditInfo(info);
-    drawerRef.current?.open();
+    setDrawerOpen();
   }, []);
 
   const onClickConfirm = useCallback(
@@ -96,7 +95,7 @@ const permissions: FC<IProps> = () => {
   );
 
   const onClickCancel = useCallback(() => {
-    drawerRef.current?.close();
+    setDrawerClose();
   }, []);
 
   // 初始化
