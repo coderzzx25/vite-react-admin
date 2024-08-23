@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import type { FC } from 'react';
 
 import { Table } from 'antd';
@@ -18,11 +18,27 @@ const BaseTable: FC<IBaseTableProps> = ({
   handlePageChange,
   othersColumn
 }) => {
+  const [tableScroll, setTableScroll] = useState<{ y: number }>({ y: 550 });
+
+  useEffect(() => {
+    const updateTableScroll = () => {
+      const availableHeight = window.innerHeight - 400;
+      setTableScroll({ y: availableHeight });
+    };
+
+    updateTableScroll();
+    window.addEventListener('resize', updateTableScroll);
+
+    return () => {
+      window.removeEventListener('resize', updateTableScroll);
+    };
+  }, []);
   return (
     <Table
       rowKey={rowKey}
       dataSource={data}
       loading={loading}
+      scroll={tableScroll}
       pagination={{
         showSizeChanger: true,
         showQuickJumper: true,

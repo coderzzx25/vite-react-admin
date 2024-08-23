@@ -76,8 +76,8 @@ const permissions: FC<IProps> = () => {
       } else {
         await createPermissionService(newValues);
       }
-      onClickReset();
       onClickCancel();
+      onClickSearch(searchInfo);
     },
     [editInfo]
   );
@@ -88,8 +88,8 @@ const permissions: FC<IProps> = () => {
 
   // 初始化
   useEffect(() => {
-    dispatch(getAllPermissionListAsyncThunk());
-  }, [dispatch]);
+    dispatch(getAllPermissionListAsyncThunk(1));
+  }, []);
 
   useEffect(() => {
     setNewDrawerConfig((prevConfig) => ({
@@ -133,6 +133,7 @@ const permissions: FC<IProps> = () => {
         total={total}
         loading={loading}
         othersColumn={baseTableOthersColumn}
+        handlePageChange={(page: number, size: number) => onClickSearch({ ...searchInfo, page, size })}
       />
       <BaseDrawer ref={drawerRef} title={editInfo ? '编辑' : '创建'}>
         <BaseForm

@@ -79,7 +79,7 @@ const roles: FC<IProps> = () => {
 
   // 获取所有权限数据
   useEffect(() => {
-    dispatch(getAllPermissionListAsyncThunk());
+    dispatch(getAllPermissionListAsyncThunk(0));
   }, [dispatch]);
 
   // 更新配置信息

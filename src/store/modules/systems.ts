@@ -56,10 +56,13 @@ export const getRolePermissionListAsyncThunk = createAsyncThunk(
  * 获取所有权限
  * @returns {Promise<IPermissionInfo[]>}
  */
-export const getAllPermissionListAsyncThunk = createAsyncThunk('systems/getAllPermissionListAsyncThunk', async () => {
-  const result = await getAllPermissionListService();
-  return result;
-});
+export const getAllPermissionListAsyncThunk = createAsyncThunk(
+  'systems/getAllPermissionListAsyncThunk',
+  async (type: number) => {
+    const result = await getAllPermissionListService(type);
+    return result;
+  }
+);
 
 export const getAllRoleListAsyncThunk = createAsyncThunk('systems/getAllRoleListAsyncThunk', async () => {
   const result = await getAllRoleListService();

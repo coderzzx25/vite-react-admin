@@ -47,9 +47,9 @@ export const updatePermissionService = (data: IUpdatePermissionBody) => {
  * 获取所有权限列表
  * @returns {Promise<IPermissionInfo[]>} 权限列表
  */
-export const getAllPermissionListService = () => {
+export const getAllPermissionListService = (type: number) => {
   return VrRequest.get<IPermissionInfo[]>({
-    url: '/permissions/all-permission-list'
+    url: `/permissions/all-permission-list/${type}`
   });
 };
 
