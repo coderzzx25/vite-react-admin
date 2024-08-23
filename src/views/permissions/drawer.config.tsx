@@ -1,8 +1,12 @@
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { IBaseFormProps } from '@/components/BaseForm/BaseForm.d';
 
 const drawerConfig: IBaseFormProps = {
   col: { span: 24 },
   searchButtonName: '提交',
+  searchButtonIcon: <CheckOutlined />,
+  resetButtonName: '取消',
+  resetButtonIcon: <CloseOutlined />,
   initialValues: {
     permissionName: '',
     permissionPid: [0],

@@ -1,6 +1,7 @@
 import { memo, FC, useEffect } from 'react';
 
 import { Form, Input, Cascader, Select, Row, Col, Button, Space } from 'antd';
+import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 
 import { IBaseFormProps, IFormField, IOptions } from './BaseForm.d';
 
@@ -15,9 +16,13 @@ const BaseForm: FC<IBaseFormProps> = ({
     xl: 6
   },
   searchButtonName = '查询',
+  searchButtonIcon = <SearchOutlined />,
+  resetButtonName = '重置',
+  resetButtonIcon = <ReloadOutlined />,
   editInfo,
   handleConfirm,
-  handleCancel
+  handleCancel,
+  otherOptions
 }) => {
   const [form] = Form.useForm();
 
@@ -29,7 +34,7 @@ const BaseForm: FC<IBaseFormProps> = ({
     }
   }, [editInfo, form]);
   return (
-    <Form onFinish={handleConfirm} onReset={handleCancel} form={form} initialValues={initialValues}>
+    <Form onFinish={handleConfirm} onReset={handleCancel} form={form} initialValues={initialValues} autoComplete="off">
       <Row gutter={24}>
         {formFields.map((item: IFormField) => (
           <Col {...col} key={item.name}>
@@ -65,10 +70,13 @@ const BaseForm: FC<IBaseFormProps> = ({
         <Col {...col}>
           <Form.Item>
             <Space>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" icon={searchButtonIcon}>
                 {searchButtonName}
               </Button>
-              <Button htmlType="reset">重置</Button>
+              <Button htmlType="reset" icon={resetButtonIcon}>
+                {resetButtonName}
+              </Button>
+              {otherOptions}
             </Space>
           </Form.Item>
         </Col>

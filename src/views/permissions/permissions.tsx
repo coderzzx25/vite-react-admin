@@ -1,8 +1,8 @@
-import { memo, useState, useEffect, useCallback, useRef } from 'react';
+import { memo, useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Col, Form, Row, Table, Input, Select, Space, Button } from 'antd';
-import { SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons';
+import { Table, Space, Button } from 'antd';
+import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 
 import tableColumn from './table.config';
 import {
@@ -14,6 +14,7 @@ import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody } from '@
 
 import BaseForm from '@/components/BaseForm/BaseForm';
 import drawerConfig from './drawer.config';
+import searchConfig from './search.config';
 import BaseDrawer from '@/components/BaseDrawer/BaseDrawer';
 import { IBaseDrawerRef } from '@/components/BaseDrawer/BaseDrawer.d';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
@@ -35,25 +36,30 @@ interface ICreateForm {
 const { Column } = Table;
 
 const permissions: FC<IProps> = () => {
-  // 表格loading
+  // 状态
   const [tableLoading, setTableLoading] = useState<boolean>(false);
-  // 表格数据
   const [tableData, setTableData] = useState<IPermissionInfo[]>([]);
-  // 表格总数
   const [total, setTotal] = useState<number>(0);
-  // 查询参数
-  const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({
-    page: 1,
-    size: 10
-  });
+  const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({ page: 1, size: 10 });
+  const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
+  const [newDrawerConfig, setNewDrawerConfig] = useState(drawerConfig);
 
-  const onClickSearch = useCallback(
-    (values: IPermissionListParams) => {
-      setSearchInfo({ ...searchInfo, ...values });
-    },
-    [searchInfo]
-  );
-  // 获取权限列表
+  // Ref
+  const drawerRef = useRef<IBaseDrawerRef | null>(null);
+
+  // 全局状态
+  const dispatch = useAppDispatch();
+  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
+
+  // 事件
+  const onClickSearch = useCallback((values: IPermissionListParams) => {
+    setSearchInfo((prevSearchInfo) => ({ ...prevSearchInfo, ...values }));
+  }, []);
+
+  const onClickReset = useCallback(() => {
+    setSearchInfo({ page: 1, size: 10 });
+  }, []);
+
   const fetchPermissionList = useCallback(async () => {
     setTableLoading(true);
     const result = await getPermissionListService(searchInfo);
@@ -62,123 +68,85 @@ const permissions: FC<IProps> = () => {
     setTableLoading(false);
   }, [searchInfo]);
 
-  // 初始化获取权限列表
+  const onClickCreate = useCallback(() => {
+    setEditInfo(null);
+    drawerRef.current?.open();
+  }, []);
+
+  const onClickEdit = useCallback((info: IPermissionInfo) => {
+    setEditInfo(info);
+    drawerRef.current?.open();
+  }, []);
+
+  const onClickConfirm = useCallback(
+    async (values: ICreateForm) => {
+      const newValues: ICreatePermissionBody = {
+        ...values,
+        permissionPid: values.permissionPid[values.permissionPid.length - 1]
+      };
+      if (editInfo) {
+        await updatePermissionService({ ...newValues, id: editInfo.id });
+      } else {
+        await createPermissionService(newValues);
+      }
+      onClickCancel();
+      fetchPermissionList();
+    },
+    [editInfo, fetchPermissionList]
+  );
+
+  const onClickCancel = useCallback(() => {
+    drawerRef.current?.close();
+  }, []);
+
+  // 初始化
   useEffect(() => {
     fetchPermissionList();
   }, [fetchPermissionList]);
-
-  const drawerRef = useRef<IBaseDrawerRef | null>(null);
-  const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
-  const [newDrawerConfig, setNewDrawerConfig] = useState(drawerConfig);
-
-  const dispatch = useAppDispatch();
-  const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
 
   useEffect(() => {
     dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
 
-  // 动态插入数据
   useEffect(() => {
-    setNewDrawerConfig({
-      ...drawerConfig,
-      formFields: drawerConfig.formFields.map((item) => {
-        if (item.name === 'permissionPid') {
-          return {
-            ...item,
-            options: [...item.options, ...allPermission]
-          };
-        }
-        return item;
-      })
-    });
+    setNewDrawerConfig((prevConfig) => ({
+      ...prevConfig,
+      formFields: prevConfig.formFields.map((item) =>
+        item.name === 'permissionPid' ? { ...item, options: [...item.options, ...allPermission] } : item
+      )
+    }));
   }, [allPermission]);
 
-  // 创建按钮
-  const onClickCreate = async () => {
-    setEditInfo(null);
-    drawerRef.current?.open();
-  };
+  // 计算
+  const columns = useMemo(() => tableColumn, []);
 
-  // 编辑按钮
-  const onClickEdit = (info: IPermissionInfo) => {
-    setEditInfo(info);
-    drawerRef.current?.open();
-  };
-
-  // 确认
-  const onClickConfirm = async (values: ICreateForm) => {
-    const newValues: ICreatePermissionBody = {
-      ...values,
-      permissionPid: values.permissionPid[values.permissionPid.length - 1]
-    };
-    if (editInfo) {
-      await updatePermissionService({ ...newValues, id: editInfo.id });
-    } else {
-      await createPermissionService(newValues);
-    }
-    onClickCancel();
-    fetchPermissionList();
-  };
-
-  // 取消
-  const onClickCancel = () => {
-    drawerRef.current?.close();
-  };
+  const paginationConfig = useMemo(
+    () => ({
+      showSizeChanger: true,
+      showQuickJumper: true,
+      current: searchInfo.page,
+      pageSize: searchInfo.size,
+      total,
+      onChange: (page: number, size: number) => setSearchInfo({ ...searchInfo, page, size }),
+      showTotal: () => `共 ${total} 条`
+    }),
+    [searchInfo, total]
+  );
 
   return (
     <div>
-      <Form autoComplete="off" onFinish={onClickSearch}>
-        <Row gutter={24}>
-          <Col span={6}>
-            <Form.Item<IPermissionListParams> label="权限名" name="permissionName">
-              <Input placeholder="请输入权限名" />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item<IPermissionListParams> label="权限类型" name="permissionType">
-              <Select placeholder="请选择权限类型" allowClear>
-                <Select.Option value={1}>菜单</Select.Option>
-                <Select.Option value={2}>按钮</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item<IPermissionListParams> label="权限状态" name="status">
-              <Select placeholder="请选择权限状态" allowClear>
-                <Select.Option value={1}>启用</Select.Option>
-                <Select.Option value={0}>禁用</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Space>
-              <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                查询
-              </Button>
-              <Button icon={<ReloadOutlined />}>重置</Button>
-              <Button type="primary" onClick={onClickCreate}>
-                创建
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-      </Form>
-      <Table
-        loading={tableLoading}
-        dataSource={tableData}
-        rowKey={'id'}
-        pagination={{
-          showSizeChanger: true,
-          showQuickJumper: true,
-          current: searchInfo.page,
-          pageSize: searchInfo.size,
-          total,
-          onChange: (page: number, size: number) => setSearchInfo({ ...searchInfo, page, size }),
-          showTotal: () => `共 ${total} 条`
-        }}
-      >
-        {tableColumn && tableColumn.map((column) => <Column {...column} children={undefined} key={column.key} />)}
+      <BaseForm
+        {...searchConfig}
+        handleConfirm={onClickSearch}
+        handleCancel={onClickReset}
+        otherOptions={
+          <Button onClick={onClickCreate} icon={<PlusOutlined />}>
+            创建
+          </Button>
+        }
+      />
+      <Table loading={tableLoading} dataSource={tableData} rowKey={'id'} pagination={paginationConfig}>
+        {columns && columns.map((column) => <Column {...column} children={undefined} key={column.key} />)}
         <Column
           title="操作"
           key="action"

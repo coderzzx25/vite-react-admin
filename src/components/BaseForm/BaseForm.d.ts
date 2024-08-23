@@ -51,11 +51,15 @@ export interface IBaseFormProps {
   formFields: IFormField[];
   initialValues: any;
   searchButtonName?: string;
+  searchButtonIcon?: ReactNode;
+  resetButtonName?: string;
+  resetButtonIcon?: ReactNode;
   col?: IFormColObject | IFormColNumber;
   children?: ReactNode;
   editInfo?: any;
   handleConfirm?: (values: any) => void;
   handleCancel?: () => void;
+  otherOptions?: ReactNode;
 }
 
 declare const BaseForm: React.ComponentType<IBaseFormProps>;
