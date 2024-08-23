@@ -1,7 +1,7 @@
-import { memo, useState, useEffect, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback, useRef } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Col, Form, Row, Table, Input, Select, Space, Button, Drawer, Cascader } from 'antd';
+import { Col, Form, Row, Table, Input, Select, Space, Button } from 'antd';
 import { SearchOutlined, ReloadOutlined, EditOutlined } from '@ant-design/icons';
 
 import tableColumn from './table.config';
@@ -11,6 +11,11 @@ import {
   updatePermissionService
 } from '@/service/modules/systems/permission';
 import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody } from '@/types/systems/permission';
+
+import BaseForm from '@/components/BaseForm/BaseForm';
+import drawerConfig from './drawer.config';
+import BaseDrawer from '@/components/BaseDrawer/BaseDrawer';
+import { IBaseDrawerRef } from '@/components/BaseDrawer/BaseDrawer.d';
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 
@@ -28,11 +33,6 @@ interface ICreateForm {
 }
 
 const { Column } = Table;
-
-const noMenuPid = {
-  permissionName: '顶级菜单',
-  id: 0
-};
 
 const permissions: FC<IProps> = () => {
   // 表格loading
@@ -67,53 +67,64 @@ const permissions: FC<IProps> = () => {
     fetchPermissionList();
   }, [fetchPermissionList]);
 
+  const drawerRef = useRef<IBaseDrawerRef | null>(null);
+  const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
+  const [newDrawerConfig, setNewDrawerConfig] = useState(drawerConfig);
+
   const dispatch = useAppDispatch();
   const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
 
-  // 请求菜单数据
   useEffect(() => {
     dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
 
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
-  const [form] = Form.useForm();
-
-  const onCloseDrawer = useCallback(() => {
-    setDrawerVisible(false);
-    setEditInfo(null);
-    form.resetFields();
-  }, [form]);
-
-  // 提交数据
-  const onClickCreate = useCallback(
-    async (values: ICreateForm) => {
-      const newPermissionPid = values.permissionPid[values.permissionPid.length - 1];
-      const newValues: ICreatePermissionBody = {
-        ...values,
-        permissionPid: newPermissionPid
-      };
-      if (editInfo) {
-        await updatePermissionService({ ...newValues, id: editInfo.id });
-      } else {
-        await createPermissionService(newValues);
-      }
-      onCloseDrawer();
-      fetchPermissionList();
-    },
-    [editInfo, fetchPermissionList, onCloseDrawer]
-  );
-
-  const onClickEdit = useCallback((info: IPermissionInfo) => {
-    setEditInfo(info);
-    setDrawerVisible(true);
-  }, []);
-
+  // 动态插入数据
   useEffect(() => {
-    if (editInfo && form) {
-      form.setFieldsValue(editInfo);
+    setNewDrawerConfig({
+      ...drawerConfig,
+      formFields: drawerConfig.formFields.map((item) => {
+        if (item.name === 'permissionPid') {
+          return {
+            ...item,
+            options: [...item.options, ...allPermission]
+          };
+        }
+        return item;
+      })
+    });
+  }, [allPermission]);
+
+  // 创建按钮
+  const onClickCreate = async () => {
+    setEditInfo(null);
+    drawerRef.current?.open();
+  };
+
+  // 编辑按钮
+  const onClickEdit = (info: IPermissionInfo) => {
+    setEditInfo(info);
+    drawerRef.current?.open();
+  };
+
+  // 确认
+  const onClickConfirm = async (values: ICreateForm) => {
+    const newValues: ICreatePermissionBody = {
+      ...values,
+      permissionPid: values.permissionPid[values.permissionPid.length - 1]
+    };
+    if (editInfo) {
+      await updatePermissionService({ ...newValues, id: editInfo.id });
+    } else {
+      await createPermissionService(newValues);
     }
-  }, [editInfo, form]);
+    onClickCancel();
+    fetchPermissionList();
+  };
+
+  // 取消
+  const onClickCancel = () => {
+    drawerRef.current?.close();
+  };
 
   return (
     <div>
@@ -146,7 +157,7 @@ const permissions: FC<IProps> = () => {
                 查询
               </Button>
               <Button icon={<ReloadOutlined />}>重置</Button>
-              <Button type="primary" onClick={() => setDrawerVisible(true)}>
+              <Button type="primary" onClick={onClickCreate}>
                 创建
               </Button>
             </Space>
@@ -181,124 +192,14 @@ const permissions: FC<IProps> = () => {
           )}
         />
       </Table>
-      <Drawer title="创建" open={drawerVisible} onClose={onCloseDrawer} width={'35%'}>
-        <Form
-          initialValues={{
-            permissionName: '',
-            permissionPid: [0],
-            permissionType: 1,
-            permissionUrl: '',
-            permissionIcon: '',
-            status: 1
-          }}
-          onFinish={onClickCreate}
-          form={form}
-        >
-          <Form.Item<ICreateForm>
-            label="权限名"
-            name="permissionName"
-            rules={[
-              {
-                required: true,
-                message: '请输入权限名'
-              }
-            ]}
-          >
-            <Input placeholder="请输入权限名" />
-          </Form.Item>
-          <Form.Item<ICreateForm>
-            label="父级"
-            name="permissionPid"
-            rules={[
-              {
-                required: true,
-                message: '请选择父级'
-              }
-            ]}
-          >
-            <Cascader
-              options={[noMenuPid, ...allPermission]}
-              changeOnSelect={true}
-              fieldNames={{
-                label: 'permissionName',
-                value: 'id'
-              }}
-              placeholder="请选择父级"
-            />
-          </Form.Item>
-          <Form.Item<ICreateForm>
-            label="权限类型"
-            name="permissionType"
-            rules={[
-              {
-                required: true,
-                message: '请选择权限类型'
-              }
-            ]}
-          >
-            <Select placeholder="请选择权限类型" allowClear>
-              <Select.Option value={1}>菜单</Select.Option>
-              <Select.Option value={2}>按钮</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item<ICreateForm>
-            label="路由地址/按钮值"
-            name="permissionUrl"
-            rules={[
-              {
-                required: true,
-                message: '请输入路由地址/按钮值'
-              }
-            ]}
-          >
-            <Input placeholder="请输入路由地址/按钮值" />
-          </Form.Item>
-          <Form.Item
-            noStyle
-            shouldUpdate={(prevValues, currentValues) => prevValues.permissionType !== currentValues.permissionType}
-          >
-            {({ getFieldValue }) => {
-              return getFieldValue('permissionType') === 1 ? (
-                <Form.Item<ICreateForm>
-                  label="路由Icon"
-                  name="permissionIcon"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入图标'
-                    }
-                  ]}
-                >
-                  <Input placeholder="请输入图标" />
-                </Form.Item>
-              ) : null;
-            }}
-          </Form.Item>
-          <Form.Item<ICreateForm>
-            label="权限状态"
-            name="status"
-            rules={[
-              {
-                required: true,
-                message: '请选择权限状态'
-              }
-            ]}
-          >
-            <Select placeholder="请选择权限状态" allowClear>
-              <Select.Option value={1}>启用</Select.Option>
-              <Select.Option value={0}>禁用</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">
-                提交
-              </Button>
-              <Button onClick={onCloseDrawer}>取消</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Drawer>
+      <BaseDrawer ref={drawerRef} title={editInfo ? '编辑' : '创建'}>
+        <BaseForm
+          {...newDrawerConfig}
+          editInfo={editInfo}
+          handleConfirm={onClickConfirm}
+          handleCancel={onClickCancel}
+        />
+      </BaseDrawer>
     </div>
   );
 };
