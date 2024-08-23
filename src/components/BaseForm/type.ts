@@ -11,29 +11,34 @@ interface IFormFieldBase {
   label: string;
   name: string;
   type: 'input' | 'select' | 'cascader';
-  isDynamic: boolean;
+  isDynamic?: boolean;
   placeholder?: string;
   rules?: Rule[];
 }
 
-interface IFormFieldSelectOrCascader extends IFormFieldBase {
-  type: 'select' | 'cascader';
-  options: IOptions[];
-  fieldNames?: { label: string; value: string };
-}
-
-interface IFormFieldInput extends IFormFieldBase {
+interface IInputField extends IFormFieldBase {
   type: 'input';
   options?: never;
 }
 
-interface IFormFildIsDynamic extends IFormFieldBase {
+interface ISelectOrCascaderField extends IFormFieldBase {
+  type: 'select' | 'cascader';
+  options: IOptions[];
+}
+
+interface IDynamicField extends IFormFieldBase {
   isDynamic: true;
   rely: string;
   relyKey: string | string[] | number | number[];
 }
 
-export type IFormField = IFormFieldSelect | IFormFieldInputOrCascader | IFormFildIsDynamic;
+interface INonDynamicField extends IFormFieldBase {
+  isDynamic?: false;
+  rely?: never;
+  relyKey?: never;
+}
+
+export type IFormField = (IInputField | ISelectOrCascaderField) & (IDynamicField | INonDynamicField);
 
 interface IFormColObject {
   xs: number;

@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { IBaseFormProps } from '@/components/BaseForm/BaseForm.d';
+import { IBaseFormProps } from '@/components/BaseForm/type';
 
 const drawerConfig: IBaseFormProps = {
   col: { span: 24 },
@@ -28,8 +28,7 @@ const drawerConfig: IBaseFormProps = {
       name: 'permissionPid',
       type: 'cascader',
       placeholder: '请选择父级',
-      options: [{ id: 0, permissionName: '顶级权限' }],
-      fieldNames: { label: 'permissionName', value: 'id' },
+      options: [{ value: 0, label: '顶级权限' }],
       rules: [{ required: true, message: '请选择父级' }]
     },
     {

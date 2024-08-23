@@ -3,7 +3,7 @@ import { memo, FC, useEffect } from 'react';
 import { Form, Input, Cascader, Select, Row, Col, Button, Space } from 'antd';
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
 
-import { IBaseFormProps, IFormField, IOptions } from './BaseForm.d';
+import { IBaseFormProps, IFormField, IOptions } from './type';
 
 const BaseForm: FC<IBaseFormProps> = ({
   formFields,
@@ -55,8 +55,8 @@ const BaseForm: FC<IBaseFormProps> = ({
                         {renderField(item)}
                       </Form.Item>
                     ) : null;
-                  } else {
-                    return item.relyKey.includes(relyValue) ? (
+                  } else if (Array.isArray(item.relyKey)) {
+                    return item.relyKey.includes(relyValue as never) ? (
                       <Form.Item name={item.name} label={item.label} rules={item.rules}>
                         {renderField(item)}
                       </Form.Item>
@@ -91,7 +91,7 @@ const renderField = (item: IFormField) => {
       return <Input placeholder={item.placeholder} />;
     case 'select':
       return (
-        <Select placeholder={item.placeholder} fieldNames={item.fieldNames}>
+        <Select placeholder={item.placeholder}>
           {item.options.map((option: IOptions) => (
             <Select.Option key={option.value} value={option.value}>
               {option.label}
@@ -100,14 +100,7 @@ const renderField = (item: IFormField) => {
         </Select>
       );
     case 'cascader':
-      return (
-        <Cascader
-          options={item.options}
-          changeOnSelect={true}
-          placeholder={item.placeholder}
-          fieldNames={item.fieldNames}
-        />
-      );
+      return <Cascader options={item.options} changeOnSelect={true} placeholder={item.placeholder} />;
     default:
       return null;
   }

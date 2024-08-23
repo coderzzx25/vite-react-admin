@@ -1,9 +1,8 @@
 import { Tag } from 'antd';
-import type { TableProps } from 'antd';
 import { mapIcon } from '@/utils/map-router';
-import { IPermissionInfo } from '@/types/systems/permission';
+import { TableProps } from 'antd';
 
-const permissionTableColumns: TableProps<IPermissionInfo>['columns'] = [
+const tableColums: TableProps<any>['columns'] = [
   {
     title: 'No.',
     dataIndex: 'id',
@@ -21,7 +20,7 @@ const permissionTableColumns: TableProps<IPermissionInfo>['columns'] = [
     dataIndex: 'permissionType',
     key: 'permissionType',
     align: 'center',
-    render: (value) => {
+    render: (value: number) => {
       switch (value) {
         case 1:
           return <Tag color="success">菜单</Tag>;
@@ -66,4 +65,4 @@ const permissionTableColumns: TableProps<IPermissionInfo>['columns'] = [
   }
 ];
 
-export default permissionTableColumns;
+export default tableColums;

@@ -1,4 +1,4 @@
-import { IBaseFormProps } from '@/components/BaseForm/BaseForm.d';
+import { IBaseFormProps } from '@/components/BaseForm/type';
 
 const searchConfig: IBaseFormProps = {
   initialValues: {

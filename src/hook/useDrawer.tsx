@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react';
-import { IBaseDrawerRef } from './BaseDrawer.d';
+import { IBaseDrawerRef } from '@/components/BaseDrawer/type';
 
 const useDrawer = () => {
   const drawerRef = useRef<IBaseDrawerRef>(null);

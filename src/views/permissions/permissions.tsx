@@ -1,10 +1,9 @@
-import { memo, useState, useEffect, useCallback, useMemo } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import type { FC, ReactNode } from 'react';
 
-import { Table, Space, Button } from 'antd';
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button } from 'antd';
+import { PlusOutlined, EditOutlined } from '@ant-design/icons';
 
-import tableColumn from './table.config';
 import {
   createPermissionService,
   getPermissionListService,
@@ -13,13 +12,20 @@ import {
 import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody } from '@/types/systems/permission';
 
 import BaseForm from '@/components/BaseForm/BaseForm';
-import drawerConfig from './drawer.config';
-import searchConfig from './search.config';
+import BaseTable from '@/components/BaseTable/BaseTable';
 import BaseDrawer from '@/components/BaseDrawer/BaseDrawer';
+import searchConfig from './search.config';
+import tableConfig from './table.config';
+import drawerConfig from './drawer.config';
+
 import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
 import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 
-import useDrawer from '@/components/BaseDrawer/useDrawer';
+import useSearch from '@/hook/useSearch';
+import useDrawer from '@/hook/useDrawer';
+import useTable from '@/hook/useTable';
+
+import { handleSelectData } from '@/utils/map-router';
 
 interface IProps {
   children?: ReactNode;
@@ -34,39 +40,21 @@ interface ICreateForm {
   status: number;
 }
 
-const { Column } = Table;
-
 const permissions: FC<IProps> = () => {
   // 状态
-  const [tableLoading, setTableLoading] = useState<boolean>(false);
-  const [tableData, setTableData] = useState<IPermissionInfo[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [searchInfo, setSearchInfo] = useState<IPermissionListParams>({ page: 1, size: 10 });
   const [editInfo, setEditInfo] = useState<IPermissionInfo | null>(null);
   const [newDrawerConfig, setNewDrawerConfig] = useState(drawerConfig);
+
+  // 自定义 hooks
+  const [searchInfo, onClickSearch, onClickReset] = useSearch<IPermissionListParams>({ page: 1, size: 10 });
   const [drawerRef, setDrawerOpen, setDrawerClose] = useDrawer();
+  const [loading, data, total] = useTable<IPermissionInfo, IPermissionListParams>(getPermissionListService, searchInfo);
 
   // 全局状态
   const dispatch = useAppDispatch();
   const { allPermission } = useAppSelector((state) => state.systems, useAppShallowEqual);
 
   // 事件
-  const onClickSearch = useCallback((values: IPermissionListParams) => {
-    setSearchInfo((prevSearchInfo) => ({ ...prevSearchInfo, ...values }));
-  }, []);
-
-  const onClickReset = useCallback(() => {
-    setSearchInfo({ page: 1, size: 10 });
-  }, []);
-
-  const fetchPermissionList = useCallback(async () => {
-    setTableLoading(true);
-    const result = await getPermissionListService(searchInfo);
-    setTableData(result.data);
-    setTotal(result.total);
-    setTableLoading(false);
-  }, [searchInfo]);
-
   const onClickCreate = useCallback(() => {
     setEditInfo(null);
     setDrawerOpen();
@@ -88,10 +76,10 @@ const permissions: FC<IProps> = () => {
       } else {
         await createPermissionService(newValues);
       }
+      onClickReset();
       onClickCancel();
-      fetchPermissionList();
     },
-    [editInfo, fetchPermissionList]
+    [editInfo]
   );
 
   const onClickCancel = useCallback(() => {
@@ -100,10 +88,6 @@ const permissions: FC<IProps> = () => {
 
   // 初始化
   useEffect(() => {
-    fetchPermissionList();
-  }, [fetchPermissionList]);
-
-  useEffect(() => {
     dispatch(getAllPermissionListAsyncThunk());
   }, [dispatch]);
 
@@ -111,26 +95,24 @@ const permissions: FC<IProps> = () => {
     setNewDrawerConfig((prevConfig) => ({
       ...prevConfig,
       formFields: prevConfig.formFields.map((item) =>
-        item.name === 'permissionPid' ? { ...item, options: [...item.options, ...allPermission] } : item
+        item.name === 'permissionPid' && item.type !== 'input'
+          ? { ...item, options: [...item.options, ...handleSelectData(allPermission, 'id', 'permissionName')] }
+          : item
       )
     }));
   }, [allPermission]);
 
-  // 计算
-  const columns = useMemo(() => tableColumn, []);
-
-  const paginationConfig = useMemo(
-    () => ({
-      showSizeChanger: true,
-      showQuickJumper: true,
-      current: searchInfo.page,
-      pageSize: searchInfo.size,
-      total,
-      onChange: (page: number, size: number) => setSearchInfo({ ...searchInfo, page, size }),
-      showTotal: () => `共 ${total} 条`
-    }),
-    [searchInfo, total]
-  );
+  const baseTableOthersColumn = [
+    {
+      title: '操作',
+      key: 'action',
+      render: (_: string, record: IPermissionInfo) => (
+        <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEdit(record)}>
+          编辑
+        </Button>
+      )
+    }
+  ];
 
   return (
     <div>
@@ -144,21 +126,14 @@ const permissions: FC<IProps> = () => {
           </Button>
         }
       />
-      <Table loading={tableLoading} dataSource={tableData} rowKey={'id'} pagination={paginationConfig}>
-        {columns && columns.map((column) => <Column {...column} children={undefined} key={column.key} />)}
-        <Column
-          title="操作"
-          key="action"
-          align="center"
-          render={(_: string, record: IPermissionInfo) => (
-            <Space size="middle">
-              <Button type="primary" icon={<EditOutlined />} onClick={() => onClickEdit(record)}>
-                编辑
-              </Button>
-            </Space>
-          )}
-        />
-      </Table>
+      <BaseTable
+        columns={tableConfig}
+        rowKey="id"
+        data={data}
+        total={total}
+        loading={loading}
+        othersColumn={baseTableOthersColumn}
+      />
       <BaseDrawer ref={drawerRef} title={editInfo ? '编辑' : '创建'}>
         <BaseForm
           {...newDrawerConfig}
