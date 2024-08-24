@@ -57,6 +57,7 @@ const VrRequest = new Request({
           localCache.deleteCache('refreshToken');
         }
       }
+      message.error((axiosError.response?.data as AxiosError)?.message || '请求失败');
       return Promise.reject(error);
     }
   }

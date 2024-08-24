@@ -41,8 +41,10 @@ const Vrlayout: FC<IProps> = () => {
   useEffect(() => {
     if (!userInfo && !accessToken && pathname !== '/login') {
       navigate('/login');
+    } else if (tabItems.length === 1 && pathname !== '/welcome') {
+      navigate('/welcome');
     }
-  }, [userInfo, accessToken, pathname, navigate]);
+  }, [userInfo, accessToken, pathname, tabItems, navigate]);
 
   // 获取用户权限
   useEffect(() => {
@@ -66,21 +68,6 @@ const Vrlayout: FC<IProps> = () => {
       }
     }
   }, [pathname, permissionUrls, loading, navigate]);
-
-  // 初始化时更新 tabItems 以反映当前路径
-  useEffect(() => {
-    const tabItemInfo = searchRouter(pathname, userPermission);
-    if (tabItemInfo && !tabItems.some((item) => item.key === pathname)) {
-      setTabItems([
-        ...tabItems,
-        {
-          label: tabItemInfo.permissionName,
-          key: pathname,
-          closable: true
-        }
-      ]);
-    }
-  }, [pathname, userPermission, tabItems]);
 
   // 处理权限点击
   const onClickMenu = useCallback(
