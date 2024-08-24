@@ -51,3 +51,12 @@ export interface ICreatePermissionBody {
 export interface IUpdatePermissionBody extends ICreatePermissionBody {
   id: number;
 }
+
+export interface ICreateForm {
+  permissionName: string;
+  permissionPid: number[];
+  permissionUrl: string;
+  permissionIcon: string;
+  permissionType: number;
+  status: number;
+}

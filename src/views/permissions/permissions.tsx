@@ -9,7 +9,9 @@ import {
   getPermissionListService,
   updatePermissionService
 } from '@/service/modules/systems/permission';
-import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody } from '@/types/systems/permission';
+import { IPermissionInfo, IPermissionListParams, ICreatePermissionBody, ICreateForm } from '@/types/systems/permission';
+import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
+import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 
 import BaseForm from '@/components/BaseForm/BaseForm';
 import BaseTable from '@/components/BaseTable/BaseTable';
@@ -17,9 +19,6 @@ import BaseDrawer from '@/components/BaseDrawer/BaseDrawer';
 import searchConfig from './search.config';
 import tableConfig from './table.config';
 import drawerConfig from './drawer.config';
-
-import { useAppDispatch, useAppSelector, useAppShallowEqual } from '@/store';
-import { getAllPermissionListAsyncThunk } from '@/store/modules/systems';
 
 import useSearch from '@/hook/useSearch';
 import useDrawer from '@/hook/useDrawer';
@@ -29,15 +28,6 @@ import { handleSelectData } from '@/utils/map-router';
 
 interface IProps {
   children?: ReactNode;
-}
-
-interface ICreateForm {
-  permissionName: string;
-  permissionPid: number[];
-  permissionUrl: string;
-  permissionIcon: string;
-  permissionType: number;
-  status: number;
 }
 
 const permissions: FC<IProps> = () => {

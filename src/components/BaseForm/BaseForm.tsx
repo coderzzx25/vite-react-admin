@@ -29,9 +29,8 @@ const BaseForm: FC<IBaseFormProps> = ({
   useEffect(() => {
     if (editInfo) {
       form.setFieldsValue(editInfo);
-    } else {
-      form.resetFields();
     }
+    form.resetFields();
   }, [editInfo, form]);
   return (
     <Form onFinish={handleConfirm} onReset={handleCancel} form={form} initialValues={initialValues} autoComplete="off">
