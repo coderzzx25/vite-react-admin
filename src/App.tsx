@@ -13,6 +13,7 @@ interface IProps {
 
 const App: FC<IProps> = () => {
   const { primaryColor, isDark } = useAppSelector((state) => state.main, useAppShallowEqual);
+  const darkColor = '#141414';
   return (
     <ConfigProvider
       locale={zhCN}
@@ -23,14 +24,14 @@ const App: FC<IProps> = () => {
         },
         components: {
           Layout: {
-            headerBg: isDark ? '#141414' : '',
+            headerBg: isDark ? darkColor : '',
             headerPadding: '0 20px',
-            bodyBg: isDark ? '#141414' : '',
-            siderBg: isDark ? '#141414' : ''
+            bodyBg: isDark ? darkColor : '',
+            siderBg: isDark ? darkColor : ''
           },
           Menu: {
-            itemBg: isDark ? '#141414' : '',
-            subMenuItemBg: isDark ? '#141414' : ''
+            itemBg: isDark ? darkColor : '',
+            subMenuItemBg: isDark ? darkColor : ''
           },
           Tree: {
             nodeSelectedBg: isDark ? primaryColor : '#e6f7ff'

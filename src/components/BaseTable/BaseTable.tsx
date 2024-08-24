@@ -39,6 +39,7 @@ const BaseTable: FC<IBaseTableProps> = ({
       dataSource={data}
       loading={loading}
       scroll={tableScroll}
+      bordered
       pagination={{
         showSizeChanger: true,
         showQuickJumper: true,
