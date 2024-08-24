@@ -7,6 +7,7 @@ import { message } from 'antd';
 import store from '@/store';
 import axios, { AxiosError } from 'axios';
 import { refreshTokenAsyncThunk } from '@/store/modules/auths';
+import { localCache } from '@/utils/cache';
 
 // 统一的请求对象
 const VrRequest = new Request({
@@ -41,17 +42,22 @@ const VrRequest = new Request({
 
       if (axiosError.response?.status === 401) {
         message.warning('正在刷新token,请稍后重试');
-        try {
-          await store.dispatch(refreshTokenAsyncThunk());
+        const result = await store.dispatch(refreshTokenAsyncThunk());
+        if (refreshTokenAsyncThunk.fulfilled.match(result)) {
           message.success('刷新token成功,请重新操作');
-        } catch {
+        } else {
           message.error('刷新token失败,请重新登录');
+          // 跳转到登录页
+          setTimeout(() => {
+            window.location.href = '/login';
+          }, 1000);
+          // 清除本地存储
+          localCache.deleteCache('userInfo');
+          localCache.deleteCache('accessToken');
+          localCache.deleteCache('refreshToken');
         }
-      } else {
-        const errorMessage = (axiosError.response?.data as { message?: string })?.message || '请求失败';
-        message.error(errorMessage);
       }
-
+      message.error((axiosError.response?.data as AxiosError)?.message || '请求失败');
       return Promise.reject(error);
     }
   }

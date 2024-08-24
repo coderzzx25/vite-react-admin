@@ -49,6 +49,6 @@ export const updateRoleService = (data: IUpdateRoleBody) => {
  */
 export const getAllRoleListService = () => {
   return VrRequest.get<IRoleInfo[]>({
-    url: '/roles/all-role-list'
+    url: `/roles/all-role-list`
   });
 };

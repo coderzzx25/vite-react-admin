@@ -26,3 +26,16 @@ export const refreshTokenService = (refreshToken: string) => {
     }
   });
 };
+
+/**
+ * github登录
+ * @param {string} code github返回的code
+ */
+export const githubLoginService = (code: string) => {
+  return VrRequest.post<IAccountLoginResponseInfo>({
+    url: '/auths/github-login',
+    data: {
+      code
+    }
+  });
+};

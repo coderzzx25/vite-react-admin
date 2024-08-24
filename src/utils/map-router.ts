@@ -1,7 +1,8 @@
-import { IPermissionInfo } from '@/types/systems/permission';
-import * as Icons from '@ant-design/icons';
-import { MenuProps } from 'antd';
 import { createElement } from 'react';
+import { IPermissionInfo } from '@/types/systems/permission';
+import { MenuProps } from 'antd';
+import * as Icons from '@ant-design/icons';
+import { IOptions } from '@/components/BaseForm/type';
 
 /**
  * @description 处理icon
@@ -86,4 +87,29 @@ export const searchRouter = (url: string, permissions: IPermissionInfo[]): IPerm
     }
   }
   return null;
+};
+
+/**
+ * 处理选择器数据格式
+ * @param {Array<object>} data 需要转换的数据
+ * @param {string} valueKey - 用于提取值的键
+ * @param {string} labelKey - 用于提取标签的键
+ * @param {string} [childrenKey='children'] - 用于提取子级的键（默认为 'children'）
+ * @returns {Array<IOptions>} 转换后的数据
+ */
+export const handleSelectData = (
+  data: Array<Record<string, any>>,
+  valueKey: string,
+  labelKey: string,
+  childrenKey: string = 'children' // Default to 'children' if not provided
+): IOptions[] => {
+  const transformData = (items: Array<Record<string, any>>): IOptions[] => {
+    return items.map((item) => ({
+      label: item[labelKey],
+      value: item[valueKey],
+      children: item[childrenKey] ? transformData(item[childrenKey]) : undefined
+    }));
+  };
+
+  return transformData(data);
 };

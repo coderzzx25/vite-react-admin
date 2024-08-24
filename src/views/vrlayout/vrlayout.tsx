@@ -41,8 +41,10 @@ const Vrlayout: FC<IProps> = () => {
   useEffect(() => {
     if (!userInfo && !accessToken && pathname !== '/login') {
       navigate('/login');
+    } else if (tabItems.length === 1 && pathname !== '/welcome') {
+      navigate('/welcome');
     }
-  }, [userInfo, pathname, navigate]);
+  }, [userInfo, accessToken, pathname, tabItems, navigate]);
 
   // 获取用户权限
   useEffect(() => {
@@ -67,12 +69,6 @@ const Vrlayout: FC<IProps> = () => {
     }
   }, [pathname, permissionUrls, loading, navigate]);
 
-  useEffect(() => {
-    if (tabItems.length === 1) {
-      navigate('/welcome');
-    }
-  }, [tabItems, navigate]);
-
   // 处理权限点击
   const onClickMenu = useCallback(
     (key: string) => {
@@ -89,7 +85,7 @@ const Vrlayout: FC<IProps> = () => {
         }
       ]);
     },
-    [navigate, userPermission]
+    [navigate, userPermission, tabItems]
   );
 
   const onClickEditTabItem = useCallback(
@@ -100,8 +96,10 @@ const Vrlayout: FC<IProps> = () => {
       newTabItems.splice(index, 1);
       setTabItems(newTabItems);
       // 切换到上一个标签页
-      const prevTabItem = newTabItems[index - 1];
-      navigate(prevTabItem.key);
+      const prevTabItem = newTabItems[index - 1] || newTabItems[0];
+      if (prevTabItem) {
+        navigate(prevTabItem.key);
+      }
     },
     [tabItems, navigate]
   );

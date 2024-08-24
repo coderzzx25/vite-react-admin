@@ -5,6 +5,7 @@ export interface IPermissionListParams {
   page: number;
   size: number;
   permissionName?: string;
+  permissionType?: number;
   status?: number;
 }
 
@@ -49,4 +50,13 @@ export interface ICreatePermissionBody {
  */
 export interface IUpdatePermissionBody extends ICreatePermissionBody {
   id: number;
+}
+
+export interface ICreateForm {
+  permissionName: string;
+  permissionPid: number[];
+  permissionUrl: string;
+  permissionIcon: string;
+  permissionType: number;
+  status: number;
 }
