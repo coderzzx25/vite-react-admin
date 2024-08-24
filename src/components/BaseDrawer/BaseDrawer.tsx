@@ -20,7 +20,7 @@ const BaseDrawer: ForwardRefRenderFunction<IBaseDrawerRef, IDrawerProps> = ({ ch
   }));
 
   return (
-    <Drawer open={visible} onClose={handleClose} title={title} width={`${width}%`}>
+    <Drawer open={visible} onClose={handleClose} title={title} width={`${width}%`} destroyOnClose>
       {children}
     </Drawer>
   );
