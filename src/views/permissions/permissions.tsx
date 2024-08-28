@@ -37,7 +37,7 @@ const permissions: FC<IProps> = () => {
 
   // 自定义 hooks
   const [searchInfo, onClickSearch, onClickReset] = useSearch<IPermissionListParams>({ page: 1, size: 10 });
-  const [drawerRef, setDrawerOpen, setDrawerClose] = useDrawer();
+  const [visible, onClickDrawerOpen, onClickDrawerClose] = useDrawer();
   const [loading, data, total] = useTable<IPermissionInfo, IPermissionListParams>(getPermissionListService, searchInfo);
 
   // 全局状态
@@ -47,12 +47,12 @@ const permissions: FC<IProps> = () => {
   // 事件
   const onClickCreate = useCallback(() => {
     setEditInfo(null);
-    setDrawerOpen();
+    onClickDrawerOpen();
   }, []);
 
   const onClickEdit = useCallback((info: IPermissionInfo) => {
     setEditInfo(info);
-    setDrawerOpen();
+    onClickDrawerOpen();
   }, []);
 
   const onClickConfirm = useCallback(
@@ -73,7 +73,7 @@ const permissions: FC<IProps> = () => {
   );
 
   const onClickCancel = useCallback(() => {
-    setDrawerClose();
+    onClickDrawerClose();
   }, []);
 
   // 初始化
@@ -125,7 +125,7 @@ const permissions: FC<IProps> = () => {
         othersColumn={baseTableOthersColumn}
         handlePageChange={(page: number, size: number) => onClickSearch({ ...searchInfo, page, size })}
       />
-      <BaseDrawer ref={drawerRef} title={editInfo ? '编辑' : '创建'}>
+      <BaseDrawer title={editInfo ? '编辑' : '创建'} visible={visible} handleDrawerClose={onClickDrawerClose}>
         <BaseForm
           {...newDrawerConfig}
           editInfo={editInfo}

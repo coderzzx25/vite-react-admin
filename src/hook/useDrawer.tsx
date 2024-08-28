@@ -1,18 +1,17 @@
-import { useRef, useCallback } from 'react';
-import { IBaseDrawerRef } from '@/components/BaseDrawer/type';
+import { useState, useCallback } from 'react';
 
 const useDrawer = () => {
-  const drawerRef = useRef<IBaseDrawerRef>(null);
+  const [visible, setVisible] = useState(false);
 
-  const openDrawer = useCallback(() => {
-    drawerRef.current?.open();
+  const handleDrawerOpen = useCallback(() => {
+    setVisible(true);
   }, []);
 
-  const closeDrawer = useCallback(() => {
-    drawerRef.current?.close();
+  const handleDrawerClose = useCallback(() => {
+    setVisible(false);
   }, []);
 
-  return [drawerRef, openDrawer, closeDrawer] as const;
+  return [visible, handleDrawerOpen, handleDrawerClose] as const;
 };
 
 export default useDrawer;

@@ -1,17 +1,13 @@
 import { ReactNode } from 'react';
-import { DrawerProps } from 'antd/es/drawer';
 
-export interface IBaseDrawerRef {
-  open: () => void;
-  close: () => void;
-}
-
-export interface IDrawerProps extends Omit<DrawerProps, 'open'> {
+export interface IDrawerProps {
+  visible: boolean;
   title: string;
+  handleDrawerClose?: () => void;
   children?: ReactNode;
   width?: number;
 }
 
-declare const BaseDrawer: React.ForwardRefExoticComponent<IDrawerProps & React.RefAttributes<IBaseDrawerRef>>;
+declare const BaseDrawer: React.ComponentType<IDrawerProps>;
 
 export default BaseDrawer;
